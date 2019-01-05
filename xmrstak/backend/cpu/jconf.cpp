@@ -164,13 +164,13 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 
 	if(flen >= 64*1024)
 	{
-		printer::inst()->print_msg(L0, "Oversized config file - %s.", confName.c_str());
+		printer::inst()->print_msg(L0, "Oversized config - %s.", confName.c_str());
 		return false;
 	}
 
 	if(flen <= 16)
 	{
-		printer::inst()->print_msg(L0, "File is empty or too short - %s.", confName.c_str());
+		printer::inst()->print_msg(L0, "conifg is empty or too short - %s.", confName.c_str());
 		return false;
 	}
 
@@ -200,7 +200,7 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 
 	if(!prv->jsonDoc.IsObject())
 	{ //This should never happen as we created the root ourselves
-		printer::inst()->print_msg(L0, "Invalid config file '%s'. No root?", confName.c_str());
+		printer::inst()->print_msg(L0, "Invalid config '%s'. No root?", confName.c_str());
 		return false;
 	}
 
@@ -216,13 +216,13 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 
 		if(prv->configValues[i] == nullptr)
 		{
-			printer::inst()->print_msg(L0, "Invalid config file '%s'. Missing value \"%s\".", confName.c_str(), oConfigValues[i].sName);
+			printer::inst()->print_msg(L0, "Invalid config '%s'. Missing value \"%s\".", confName.c_str(), oConfigValues[i].sName);
 			return false;
 		}
 
 		if(!checkType(prv->configValues[i]->GetType(), oConfigValues[i].iType))
 		{
-			printer::inst()->print_msg(L0, "Invalid config file '%s'. Value \"%s\" has unexpected type.", confName.c_str(), oConfigValues[i].sName);
+			printer::inst()->print_msg(L0, "Invalid config '%s'. Value \"%s\" has unexpected type.", confName.c_str(), oConfigValues[i].sName);
 			return false;
 		}
 	}
