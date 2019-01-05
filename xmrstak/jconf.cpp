@@ -353,50 +353,24 @@ const char* jconf::GetDefaultPool(const char* needle)
 	return default_example;
 }
 
-bool jconf::parse_file(const char* sFilename, bool main_conf)
+bool jconf::parse_config(const std::string& config, bool main_conf)
 {
-	FILE * pFile;
-	char * buffer;
-	size_t flen;
-
-	pFile = fopen(sFilename, "rb");
-	if (pFile == NULL)
+	if(config.size() >= 64*1024)
 	{
-		printer::inst()->print_msg(L0, "Failed to open config file %s.", sFilename);
+		printer::inst()->print_msg(L0, "Oversized config");
 		return false;
 	}
 
-	fseek(pFile,0,SEEK_END);
-	flen = ftell(pFile);
-	rewind(pFile);
-
-	if(flen >= 64*1024)
+	if(config.size() <= 16)
 	{
-		fclose(pFile);
-		printer::inst()->print_msg(L0, "Oversized config file - %s.", sFilename);
+		printer::inst()->print_msg(L0, "File is empty or too short.");
 		return false;
 	}
 
-	if(flen <= 16)
-	{
-		fclose(pFile);
-		printer::inst()->print_msg(L0, "File is empty or too short - %s.", sFilename);
-		return false;
-	}
 
-	buffer = (char*)malloc(flen + 3);
-	if(fread(buffer+1, flen, 1, pFile) != 1)
-	{
-		free(buffer);
-		fclose(pFile);
-		printer::inst()->print_msg(L0, "Read error while reading %s.", sFilename);
-		return false;
-	}
-	fclose(pFile);
-
+	std::vector<char> buffer(config.size() + 3);
 	//Replace Unicode BOM with spaces - we always use UTF-8
-	unsigned char* ubuffer = (unsigned char*)buffer;
-	if(ubuffer[1] == 0xEF && ubuffer[2] == 0xBB && ubuffer[3] == 0xBF)
+	if(static_cast<unsigned char>(buffer[1]) == 0xEF && static_cast<unsigned char>(buffer[2]) == 0xBB && static_cast<unsigned char>(buffer[3]) == 0xBF)
 	{
 		buffer[1] = ' ';
 		buffer[2] = ' ';
@@ -404,24 +378,23 @@ bool jconf::parse_file(const char* sFilename, bool main_conf)
 	}
 
 	buffer[0] = '{';
-	buffer[flen] = '}';
-	buffer[flen + 1] = '\0';
+	buffer[config.size()] = '}';
+	buffer[config.size() + 1] = '\0';
 
 	Document& root = main_conf ? prv->jsonDoc : prv->jsonDocPools;
 
-	root.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer, flen+2);
-	free(buffer);
+	root.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer.data(), config.size() + 2);
+	buffer.clear();
 
 	if(root.HasParseError())
 	{
-		printer::inst()->print_msg(L0, "JSON config parse error in '%s' (offset %llu): %s",
-			sFilename, int_port(root.GetErrorOffset()), GetParseError_En(root.GetParseError()));
+		printer::inst()->print_msg(L0, "JSON config parse error' (offset %llu): %s", int_port(root.GetErrorOffset()), GetParseError_En(root.GetParseError()));
 		return false;
 	}
 
 	if(!root.IsObject())
 	{ //This should never happen as we created the root ourselves
-		printer::inst()->print_msg(L0, "Invalid config file '%s'. No root?", sFilename);
+		printer::inst()->print_msg(L0, "Invalid config file'. No root?");
 		return false;
 	}
 
@@ -439,13 +412,13 @@ bool jconf::parse_file(const char* sFilename, bool main_conf)
 
 			if(prv->configValues[i] == nullptr)
 			{
-				printer::inst()->print_msg(L0, "Invalid config file '%s'. Missing value \"%s\".", sFilename, oConfigValues[i].sName);
+				printer::inst()->print_msg(L0, "Invalid config. Missing value \"%s\".", oConfigValues[i].sName);
 				return false;
 			}
 
 			if(!checkType(prv->configValues[i]->GetType(), oConfigValues[i].iType))
 			{
-				printer::inst()->print_msg(L0, "Invalid config file '%s'. Value \"%s\" has unexpected type.", sFilename, oConfigValues[i].sName);
+				printer::inst()->print_msg(L0, "Invalid config. Value \"%s\" has unexpected type.", oConfigValues[i].sName);
 				return false;
 			}
 		}
@@ -464,13 +437,13 @@ bool jconf::parse_file(const char* sFilename, bool main_conf)
 
 			if(prv->configValues[i] == nullptr)
 			{
-				printer::inst()->print_msg(L0, "Invalid config file '%s'. Missing value \"%s\".", sFilename, oConfigValues[i].sName);
+				printer::inst()->print_msg(L0, "Invalid config. Missing value \"%s\".", oConfigValues[i].sName);
 				return false;
 			}
 
 			if(!checkType(prv->configValues[i]->GetType(), oConfigValues[i].iType))
 			{
-				printer::inst()->print_msg(L0, "Invalid config file '%s'. Value \"%s\" has unexpected type.", sFilename, oConfigValues[i].sName);
+				printer::inst()->print_msg(L0, "Invalid config. Value \"%s\" has unexpected type.", oConfigValues[i].sName);
 				return false;
 			}
 		}
@@ -479,7 +452,7 @@ bool jconf::parse_file(const char* sFilename, bool main_conf)
 	return true;
 }
 
-bool jconf::parse_config(const char* sFilename, const char* sFilenamePools)
+bool jconf::parse_configs(const std::string& sConfig, const std::string& sConfigPools)
 {
 	if(!check_cpu_features())
 	{
@@ -487,10 +460,10 @@ bool jconf::parse_config(const char* sFilename, const char* sFilenamePools)
 		return false;
 	}
 
-	if(!parse_file(sFilename, true))
+	if(!parse_config(sConfig, true))
 		return false;
 
-	if(!parse_file(sFilenamePools, false))
+	if(!parse_config(sConfigPools, false))
 		return false;
 
 	size_t pool_cnt = prv->configValues[aPoolList]->Size();
