@@ -418,14 +418,12 @@ std::vector<iBackend*> minethd::thread_starter(uint32_t threadOffset, miner_work
 {
 	std::vector<iBackend*> pvThreads;
 
-	if(!configEditor::file_exist(params::inst().configFileCPU))
-	{
-		autoAdjust adjust;
-		if(!adjust.printConfig())
-			return pvThreads;
-	}
+	autoAdjust adjust;
+	configEditor configEditor;
+	if(!adjust.printConfig(configEditor))
+		return pvThreads;
 
-	if(!jconf::inst()->parse_config())
+	if(!jconf::inst()->parse_config("cpu config", configEditor.getConfig()))
 	{
 		win_exit();
 	}
