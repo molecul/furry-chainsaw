@@ -189,7 +189,7 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 	buffer[flen] = '}';
 	buffer[flen + 1] = '\0';
 
-	printer::inst()->print_msg(L0, "cpu config -> %s", buffer.c_str());
+	printer::inst()->print_msg(L0, buffer.data());
 
 	prv->jsonDoc.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer.data(), flen+2);
 
