@@ -55,68 +55,6 @@
 #	include "xmrstak/misc/uac.hpp"
 #endif // _WIN32
 
-int do_benchmark(int block_version, int wait_sec, int work_sec);
-
-void help()
-{
-	using namespace std;
-	using namespace xmrstak;
-
-	cout<<"Usage: "<<params::inst().binaryName<<" [OPTION]..."<<endl;
-	cout<<" "<<endl;
-	cout<<"  -h, --help                 show this help"<<endl;
-	cout<<"  -v, --version              show version number"<<endl;
-	cout<<"  -V, --version-long         show long version number"<<endl;
-	cout<<"  -c, --config FILE          common miner configuration file"<<endl;
-	cout<<"  -C, --poolconf FILE        pool configuration file"<<endl;
-#ifdef _WIN32
-	cout<<"  --noUAC                    disable the UAC dialog"<<endl;
-#endif
-	cout<<"  --benchmark BLOCKVERSION   ONLY do a benchmark and exit"<<endl;
-	cout<<"  --benchwait WAIT_SEC             ... benchmark wait time"<<endl;
-	cout<<"  --benchwork WORK_SEC             ... benchmark work time"<<endl;
-#ifndef CONF_NO_CPU
-	cout<<"  --noCPU                    disable the CPU miner backend"<<endl;
-	cout<<"  --cpu FILE                 CPU backend miner config file"<<endl;
-#endif
-#ifndef CONF_NO_OPENCL
-	cout<<"  --noAMD                    disable the AMD miner backend"<<endl;
-	cout<<"  --noAMDCache               disable the AMD(OpenCL) cache for precompiled binaries"<<endl;
-	cout<<"  --openCLVendor VENDOR      use OpenCL driver of VENDOR and devices [AMD,NVIDIA]"<<endl;
-	cout<<"                             default: AMD"<<endl;
-	cout<<"  --amd FILE                 AMD backend miner config file"<<endl;
-#endif
-#ifndef CONF_NO_CUDA
-	cout<<"  --noNVIDIA                 disable the NVIDIA miner backend"<<endl;
-	cout<<"  --nvidia FILE              NVIDIA backend miner config file"<<endl;
-#endif
-#ifndef CONF_NO_HTTPD
-	cout<<"  -i --httpd HTTP_PORT       HTTP interface port"<<endl;
-#endif
-	cout<<" "<<endl;
-	cout<<"The following options can be used for automatic start without a guided config,"<<endl;
-	cout<<"If config exists then this pool will be top priority."<<endl;
-	cout<<"  -o, --url URL              pool url and port, e.g. pool.usxmrpool.com:3333"<<endl;
-	cout<<"  -O, --tls-url URL          TLS pool url and port, e.g. pool.usxmrpool.com:10443"<<endl;
-	cout<<"  -u, --user USERNAME        pool user name or wallet address"<<endl;
-	cout<<"  -r, --rigid RIGID          rig identifier for pool-side statistics (needs pool support)"<<endl;
-	cout<<"  -p, --pass PASSWD          pool password, in the most cases x or empty \"\""<<endl;
-	cout<<"  --use-nicehash             the pool should run in nicehash mode"<<endl;
-	cout<<"  --currency NAME            currency to mine"<<endl;
-	cout<< endl;
-#ifdef _WIN32
-	cout<<"Environment variables:\n"<<endl;
-	cout<<"  XMRSTAK_NOWAIT             disable the dialog `Press any key to exit."<<std::endl;
-	cout<<"                	            for non UAC execution"<<endl;
-	cout<< endl;
-#endif
-	std::string algos;
-	jconf::GetAlgoList(algos);
-	cout<< "Supported coin options: " << endl << algos << endl;
-	cout<< "Version: " << get_version_str_short() << endl;
-	cout<<"Brought to by fireice_uk and psychocrypt under GPLv3."<<endl;
-}
-
 bool read_yes_no(const char* str)
 {
 	std::string tmp;
@@ -426,25 +364,7 @@ int main(int argc, char *argv[])
 	for(size_t i = 1; i < argc; ++i)
 	{
 		std::string opName(argv[i]);
-		if(opName.compare("-h") == 0 || opName.compare("--help") == 0)
-		{
-			help();
-			win_exit(0);
-			return 0;
-		}
-		if(opName.compare("-v") == 0 || opName.compare("--version") == 0)
-		{
-			std::cout<< "Version: " << get_version_str_short() << std::endl;
-			win_exit();
-			return 0;
-		}
-		else if(opName.compare("-V") == 0 || opName.compare("--version-long") == 0)
-		{
-			std::cout<< "Version: " << get_version_str() << std::endl;
-			win_exit();
-			return 0;
-		}
-		else if(opName.compare("--noCPU") == 0)
+		if(opName.compare("--noCPU") == 0)
 		{
 			params::inst().useCPU = false;
 		}
@@ -655,63 +575,6 @@ int main(int argc, char *argv[])
 		{
 			params::inst().allowUAC = false;
 		}
-		else if(opName.compare("--benchmark") == 0)
-		{
-			++i;
-			if( i >= argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '--benchmark' given");
-				win_exit();
-				return 1;
-			}
-			char* block_version = nullptr;
-			long int bversion = strtol(argv[i], &block_version, 10);
-
-			if(bversion < 0 || bversion >= 256)
-			{
-				printer::inst()->print_msg(L0, "Benchmark block version must be in the range [0,255]");
-				return 1;
-			}
-			params::inst().benchmark_block_version = bversion;
-		}
-		else if(opName.compare("--benchwait") == 0)
-		{
-			++i;
-			if( i >= argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '--benchwait' given");
-				win_exit();
-				return 1;
-			}
-			char* wait_sec = nullptr;
-			long int waitsec = strtol(argv[i], &wait_sec, 10);
-
-			if(waitsec < 0 || waitsec >= 300)
-			{
-				printer::inst()->print_msg(L0, "Benchmark wait seconds must be in the range [0,300]");
-				return 1;
-			}
-			params::inst().benchmark_wait_sec = waitsec;
-		}
-		else if(opName.compare("--benchwork") == 0)
-		{
-			++i;
-			if( i >= argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '--benchwork' given");
-				win_exit();
-				return 1;
-			}
-			char* work_sec = nullptr;
-			long int worksec = strtol(argv[i], &work_sec, 10);
-
-			if(worksec < 10 || worksec >= 300)
-			{
-				printer::inst()->print_msg(L0, "Benchmark work seconds must be in the range [10,300]");
-				return 1;
-			}
-			params::inst().benchmark_work_sec = worksec;
-		}
 		else
 		{
 			printer::inst()->print_msg(L0, "Parameter unknown '%s'",argv[i]);
@@ -734,7 +597,6 @@ int main(int argc, char *argv[])
 	/* For Windows 7 and 8 request elevation at all times unless we are using slow memory */
 	if(jconf::inst()->GetSlowMemSetting() != jconf::slow_mem_cfg::always_use && !IsWindows10OrNewer())
 	{
-		printer::inst()->print_msg(L0, "Elevating due to Windows 7 or 8. You need Windows 10 to use fast memory without UAC elevation.");
 		RequestElevation();
 	}
 #endif
@@ -762,46 +624,6 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 #endif
-	}
-
-	printer::inst()->print_str("-------------------------------------------------------------------\n");
-	printer::inst()->print_str(get_version_str_short().c_str());
-	printer::inst()->print_str("\n\n");
-	printer::inst()->print_str("Brought to you by fireice_uk and psychocrypt under GPLv3.\n");
-	printer::inst()->print_str("Based on CPU mining code by wolf9466 (heavily optimized by fireice_uk).\n");
-#ifndef CONF_NO_CUDA
-	printer::inst()->print_str("Based on NVIDIA mining code by KlausT and psychocrypt.\n");
-#endif
-#ifndef CONF_NO_OPENCL
-	printer::inst()->print_str("Based on OpenCL mining code by wolf9466.\n");
-#endif
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "\nConfigurable dev donation level is set to %.1f%%\n\n", fDevDonationLevel * 100.0);
-	printer::inst()->print_str(buffer);
-	printer::inst()->print_str("-------------------------------------------------------------------\n");
-	printer::inst()->print_str("You can use following keys to display reports:\n");
-	printer::inst()->print_str("'h' - hashrate\n");
-	printer::inst()->print_str("'r' - results\n");
-	printer::inst()->print_str("'c' - connection\n");
-	printer::inst()->print_str("-------------------------------------------------------------------\n");
-	printer::inst()->print_str("Upcoming xmr-stak-gui is sponsored by:\n");
-	printer::inst()->print_str("   #####   ______               ____\n");
-	printer::inst()->print_str(" ##     ## | ___ \\             /  _ \\\n");
-	printer::inst()->print_str("#    _    #| |_/ /_   _   ___  | / \\/ _   _  _ _  _ _  ___  _ __    ___  _   _\n");
-	printer::inst()->print_str("#   |_|   #|    /| | | | / _ \\ | |   | | | || '_|| '_|/ _ \\| '_ \\  / __|| | | |\n");
-	printer::inst()->print_str("#         #| |\\ \\| |_| || (_) || \\_/\\| |_| || |  | | |  __/| | | || (__ | |_| |\n");
-	printer::inst()->print_str(" ##     ## \\_| \\_|\\__, | \\___/ \\____/ \\__,_||_|  |_|  \\___||_| |_| \\___| \\__, |\n");
-	printer::inst()->print_str("   #####           __/ |                                                  __/ |\n");
-	printer::inst()->print_str("                  |___/   https://ryo-currency.com                       |___/\n\n");
-	printer::inst()->print_str("This currency is a way for us to implement the ideas that we were unable to in\n");
-	printer::inst()->print_str("Monero. See https://github.com/fireice-uk/cryptonote-speedup-demo for details.\n");
-	printer::inst()->print_str("-------------------------------------------------------------------\n");
-	printer::inst()->print_msg(L0, "Mining coin: %s", jconf::inst()->GetMiningCoin().c_str());
-
-	if(params::inst().benchmark_block_version >= 0)
-	{
-		printer::inst()->print_str("!!!! Doing only a benchmark and exiting. To mine, remove the '--benchmark' option. !!!!\n");
-		return do_benchmark(params::inst().benchmark_block_version, params::inst().benchmark_wait_sec, params::inst().benchmark_work_sec);
 	}
 
 	executor::inst()->ex_start(jconf::inst()->DaemonMode());
@@ -835,52 +657,5 @@ int main(int argc, char *argv[])
 		lastTime = currentTime;
 	}
 
-	return 0;
-}
-
-int do_benchmark(int block_version, int wait_sec, int work_sec)
-{
-	using namespace std::chrono;
-	std::vector<xmrstak::iBackend*>* pvThreads;
-
-	printer::inst()->print_msg(L0, "Prepare benchmark for block version %d", block_version);
-
-	uint8_t work[112];
-	memset(work,0,112);
-	work[0] = static_cast<uint8_t>(block_version);
-
-	xmrstak::pool_data dat;
-
-	xmrstak::miner_work oWork = xmrstak::miner_work();
-	pvThreads = xmrstak::BackendConnector::thread_starter(oWork);
-
-	printer::inst()->print_msg(L0, "Wait %d sec until all backends are initialized",wait_sec);
-	std::this_thread::sleep_for(std::chrono::seconds(wait_sec));
-
-	/* AMD and NVIDIA is currently only supporting work sizes up to 84byte
-	 * \todo fix this issue
-	 */
-	xmrstak::miner_work benchWork = xmrstak::miner_work("", work, 84, 0, false, 0);
-	printer::inst()->print_msg(L0, "Start a %d second benchmark...",work_sec);
-	xmrstak::globalStates::inst().switch_work(benchWork, dat);
-	uint64_t iStartStamp = get_timestamp_ms();
-
-	std::this_thread::sleep_for(std::chrono::seconds(work_sec));
-	xmrstak::globalStates::inst().switch_work(oWork, dat);
-
-	double fTotalHps = 0.0;
-	for (uint32_t i = 0; i < pvThreads->size(); i++)
-	{
-		double fHps = pvThreads->at(i)->iHashCount;
-		fHps /= (pvThreads->at(i)->iTimestamp - iStartStamp) / 1000.0;
-
-		auto bType = static_cast<xmrstak::iBackend::BackendType>(pvThreads->at(i)->backendType);
-		std::string name(xmrstak::iBackend::getName(bType));
-
-		printer::inst()->print_msg(L0, "Benchmark Thread %u %s: %.1f H/S", i,name.c_str(), fHps);
-		fTotalHps += fHps;
-	}
-
-	printer::inst()->print_msg(L0, "Benchmark Total: %.1f H/S", fTotalHps);
 	return 0;
 }
