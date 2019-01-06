@@ -384,6 +384,8 @@ bool jconf::parse_config(const std::string& config, bool main_conf)
 
 	Document& root = main_conf ? prv->jsonDoc : prv->jsonDocPools;
 
+	printer::inst()->print_msg(L0, buffer.data());
+
 	root.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer.data(), config.size() + 2);
 	buffer.clear();
 
