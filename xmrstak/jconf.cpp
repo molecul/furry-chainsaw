@@ -384,17 +384,16 @@ bool jconf::parse_config(const std::string& config, bool main_conf)
 
 	Document& root = main_conf ? prv->jsonDoc : prv->jsonDocPools;
 
-	printer::inst()->print_msg(L0, buffer.data());
-
 	root.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer.data(), config.size() + 2);
+	std::cout<<buffer.data()<<std::endl;
+
+	buffer.clear();
 
 	if(root.HasParseError())
 	{
-		printer::inst()->print_msg(L0, "JSON config parse error' (offset %llu): %s \r\n Config: %s", int_port(root.GetErrorOffset()), GetParseError_En(root.GetParseError()), buffer.data());
+		printer::inst()->print_msg(L0, "JSON config parse error' (offset %llu): %s", int_port(root.GetErrorOffset()), GetParseError_En(root.GetParseError()));
 		return false;
 	}
-	//ToDO: replace later
-	buffer.clear();
 
 	if(!root.IsObject())
 	{ //This should never happen as we created the root ourselves
