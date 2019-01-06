@@ -37,6 +37,8 @@
 #include <numeric>
 #include <algorithm>
 
+#include <iostream>
+
 #ifdef _WIN32
 #define strcasecmp _stricmp
 #include <intrin.h>
