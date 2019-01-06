@@ -17,21 +17,27 @@ struct configEditor
 
 	configEditor()
 	{
-
 	}
 
-	static bool file_exist( const std::string filename)
+	configEditor(const char* configTemplate)
+		: m_fileContent(configTemplate)
+	{
+	}
+
+	static bool file_exist(const std::string& filename)
 	{
 		std::ifstream fstream(filename);
 		return fstream.good();
 	}
 
-	void set( const std::string && content)
+	void set(const std::string& content)
 	{
 		m_fileContent = content;
 	}
 
-	bool load(const std::string filename)
+	const std::string& getConfig() { return m_fileContent; }
+
+	bool load(const std::string& filename)
 	{
 		std::ifstream fstream(filename);
 		m_fileContent = std::string(
@@ -41,7 +47,7 @@ struct configEditor
 		return fstream.good();
 	}
 
-	void write(const std::string filename)
+	void formatConfig()
 	{
 		// endmarks: for filtering full lines inside the template string
 		// Platform marks are done globally here
@@ -61,12 +67,16 @@ struct configEditor
 		replace("---LINUX\n", "\n");
 #endif
 		replace("XMRSTAK_VERSION", get_version_str());
+	}
+
+	void writeToFile(const std::string& filename)
+	{
 		std::ofstream out(filename);
 		out << m_fileContent;
 		out.close();
 	}
 
-	void replace(const std::string search, const std::string substring)
+	void replace(const std::string& search, const std::string& substring)
 	{
 		m_fileContent = std::regex_replace(m_fileContent, std::regex(search), substring);
 	}

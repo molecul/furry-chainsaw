@@ -189,7 +189,7 @@ inline void prompt_once(bool& prompted)
 	}
 }
 
-void do_guided_pool_config()
+xmrstak::configEditor do_guided_pool_config()
 {
 	using namespace xmrstak;
 
@@ -198,8 +198,7 @@ void do_guided_pool_config()
 		#include "../pools.tpl"
 	;
 
-	configEditor configTpl{};
-	configTpl.set(std::string(tpl));
+	configEditor configTpl(tpl);
 	bool prompted = false;
 
 	auto& currency = params::inst().currency;
@@ -331,21 +330,20 @@ void do_guided_pool_config()
 
 	configTpl.replace("CURRENCY", currency);
 	configTpl.replace("POOLCONF", pool_table);
-	configTpl.write(params::inst().configFilePools);
-	std::cout<<"Pool configuration stored in file '"<<params::inst().configFilePools<<"'"<<std::endl;
+	configTpl.formatConfig();
+	return configTpl;
 }
 
-void do_guided_config()
+xmrstak::configEditor do_guided_config()
 {
 	using namespace xmrstak;
 
 	// load the template of the backend config into a char variable
-	const char *tpl =
+	const char *tpl = 
 		#include "../config.tpl"
 	;
 
-	configEditor configTpl{};
-	configTpl.set(std::string(tpl));
+	configEditor configTpl(tpl);
 	bool prompted = false;
 
 	auto& http_port = params::inst().httpd_port;
@@ -373,8 +371,8 @@ void do_guided_config()
 	}
 
 	configTpl.replace("HTTP_PORT", std::to_string(http_port));
-	configTpl.write(params::inst().configFile);
-	std::cout<<"Configuration stored in file '"<<params::inst().configFile<<"'"<<std::endl;
+	configTpl.formatConfig();
+	return configTpl;
 }
 
 int main(int argc, char *argv[])
@@ -723,13 +721,10 @@ int main(int argc, char *argv[])
 	}
 
 	// check if we need a guided start
-	if(!configEditor::file_exist(params::inst().configFile))
-		do_guided_config();
+	configEditor guidedConfig =	do_guided_config();
+	configEditor guidedPoolConfig = do_guided_pool_config();
 
-	if(!configEditor::file_exist(params::inst().configFilePools))
-		do_guided_pool_config();
-
-	if(!jconf::inst()->parse_config(params::inst().configFile.c_str(), params::inst().configFilePools.c_str()))
+	if(!jconf::inst()->parse_configs(guidedConfig.getConfig(), guidedPoolConfig.getConfig()))
 	{
 		win_exit();
 		return 1;

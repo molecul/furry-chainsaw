@@ -18,7 +18,8 @@ public:
 		return env.pJconfConfig;
 	};
 
-	bool parse_config(const char* sFilename, const char* sFilenamePools);
+	bool parse_configs(const std::string& sFilename, const std::string& sFilenamePools);
+	bool parse_config_from_file(const char* sFilename, const char* sFilenamePools);
 
 	struct pool_cfg {
 		const char* sPoolAddr;
@@ -83,7 +84,9 @@ public:
 private:
 	jconf();
 
+	bool parse_config(const std::string& sConfig, bool main_conf);
 	bool parse_file(const char* sFilename, bool main_conf);
+
 
 	bool check_cpu_features();
 	struct opaque_private;

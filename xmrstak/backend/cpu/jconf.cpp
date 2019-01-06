@@ -28,6 +28,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 #include <string>
 
 #ifdef _WIN32
@@ -157,50 +158,27 @@ size_t jconf::GetThreadCount()
 		return 0;
 }
 
-bool jconf::parse_config(const char* sFilename)
+bool jconf::parse_config(const std::string& confName, const std::string& sConfig)
 {
-	FILE * pFile;
-	char * buffer;
-	size_t flen;
-
-	pFile = fopen(sFilename, "rb");
-	if (pFile == NULL)
-	{
-		printer::inst()->print_msg(L0, "Failed to open config file %s.", sFilename);
-		return false;
-	}
-
-	fseek(pFile,0,SEEK_END);
-	flen = ftell(pFile);
-	rewind(pFile);
+	size_t flen = sConfig.size();
 
 	if(flen >= 64*1024)
 	{
-		fclose(pFile);
-		printer::inst()->print_msg(L0, "Oversized config file - %s.", sFilename);
+		printer::inst()->print_msg(L0, "Oversized config - %s.", confName.c_str());
 		return false;
 	}
 
 	if(flen <= 16)
 	{
-		fclose(pFile);
-		printer::inst()->print_msg(L0, "File is empty or too short - %s.", sFilename);
+		printer::inst()->print_msg(L0, "conifg is empty or too short - %s.", confName.c_str());
 		return false;
 	}
 
-	buffer = (char*)malloc(flen + 3);
-	if(fread(buffer+1, flen, 1, pFile) != 1)
-	{
-		free(buffer);
-		fclose(pFile);
-		printer::inst()->print_msg(L0, "Read error while reading %s.", sFilename);
-		return false;
-	}
-	fclose(pFile);
+	std::vector<char> buffer(flen + 3);
+	std::copy(sConfig.begin(), sConfig.end(), buffer.begin());
 
 	//Replace Unicode BOM with spaces - we always use UTF-8
-	unsigned char* ubuffer = (unsigned char*)buffer;
-	if(ubuffer[1] == 0xEF && ubuffer[2] == 0xBB && ubuffer[3] == 0xBF)
+	if(static_cast<unsigned char>(buffer[1]) == 0xEF && static_cast<unsigned char>(buffer[2]) == 0xBB && static_cast<unsigned char>(buffer[3]) == 0xBF)
 	{
 		buffer[1] = ' ';
 		buffer[2] = ' ';
@@ -211,19 +189,18 @@ bool jconf::parse_config(const char* sFilename)
 	buffer[flen] = '}';
 	buffer[flen + 1] = '\0';
 
-	prv->jsonDoc.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer, flen+2);
-	free(buffer);
+	prv->jsonDoc.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer.data(), flen+2);
 
 	if(prv->jsonDoc.HasParseError())
 	{
 		printer::inst()->print_msg(L0, "JSON config parse error in '%s' (offset %llu): %s",
-			sFilename, int_port(prv->jsonDoc.GetErrorOffset()), GetParseError_En(prv->jsonDoc.GetParseError()));
+			confName.c_str(), int_port(prv->jsonDoc.GetErrorOffset()), GetParseError_En(prv->jsonDoc.GetParseError()));
 		return false;
 	}
 
 	if(!prv->jsonDoc.IsObject())
 	{ //This should never happen as we created the root ourselves
-		printer::inst()->print_msg(L0, "Invalid config file '%s'. No root?", sFilename);
+		printer::inst()->print_msg(L0, "Invalid config '%s'. No root?", confName.c_str());
 		return false;
 	}
 
@@ -239,13 +216,13 @@ bool jconf::parse_config(const char* sFilename)
 
 		if(prv->configValues[i] == nullptr)
 		{
-			printer::inst()->print_msg(L0, "Invalid config file '%s'. Missing value \"%s\".", sFilename, oConfigValues[i].sName);
+			printer::inst()->print_msg(L0, "Invalid config '%s'. Missing value \"%s\".", confName.c_str(), oConfigValues[i].sName);
 			return false;
 		}
 
 		if(!checkType(prv->configValues[i]->GetType(), oConfigValues[i].iType))
 		{
-			printer::inst()->print_msg(L0, "Invalid config file '%s'. Value \"%s\" has unexpected type.", sFilename, oConfigValues[i].sName);
+			printer::inst()->print_msg(L0, "Invalid config '%s'. Value \"%s\" has unexpected type.", confName.c_str(), oConfigValues[i].sName);
 			return false;
 		}
 	}

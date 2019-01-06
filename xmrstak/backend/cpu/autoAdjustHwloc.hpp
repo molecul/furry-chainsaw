@@ -35,7 +35,7 @@ public:
 		halfHashMemSize = hashMemSize / 2u;
 	}
 
-	bool printConfig()
+	bool printConfig(configEditor& configTpl)
 	{
 
 		hwloc_topology_t topology;
@@ -43,13 +43,12 @@ public:
 		hwloc_topology_load(topology);
 
 		std::string conf;
-		configEditor configTpl{};
 
 		// load the template of the backend config into a char variable
 		const char *tpl =
 			#include "./config.tpl"
 		;
-		configTpl.set( std::string(tpl) );
+		configTpl.set(tpl);
 
 		try
 		{
@@ -84,8 +83,7 @@ public:
 		}
 
 		configTpl.replace("CPUCONFIG",conf);
-		configTpl.write(params::inst().configFileCPU);
-		printer::inst()->print_msg(L0, "CPU configuration stored in file '%s'", params::inst().configFileCPU.c_str());
+		configTpl.formatConfig();
 		/* Destroy topology object. */
 		hwloc_topology_destroy(topology);
 

@@ -26,7 +26,7 @@ class autoAdjust
 {
 public:
 
-	bool printConfig()
+	bool printConfig(configEditor& configTpl)
 	{
 
 		const size_t hashMemSizeKB = std::max(
@@ -35,13 +35,11 @@ public:
 		) / 1024u;
 		const size_t halfHashMemSizeKB = hashMemSizeKB / 2u;
 
-		configEditor configTpl{};
-
 		// load the template of the backend config into a char variable
 		const char *tpl =
 			#include "./config.tpl"
 		;
-		configTpl.set( std::string(tpl) );
+		configTpl.set(tpl);
 
 		std::string conf;
 
@@ -97,9 +95,6 @@ public:
 		}
 
 		configTpl.replace("CPUCONFIG",conf);
-		configTpl.write(params::inst().configFileCPU);
-		printer::inst()->print_msg(L0, "CPU configuration stored in file '%s'", params::inst().configFileCPU.c_str());
-
 		return true;
 	}
 

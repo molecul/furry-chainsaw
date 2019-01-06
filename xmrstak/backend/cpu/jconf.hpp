@@ -19,7 +19,7 @@ public:
 		return oInst;
 	};
 
-	bool parse_config(const char* sFilename = params::inst().configFileCPU.c_str());
+	bool parse_config(const std::string& confName, const std::string& sFilename);
 
 	struct thd_cfg {
 		int iMultiway;
