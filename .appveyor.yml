@@ -24,8 +24,6 @@ build_script:
 test_script:
   - cd c:\xmr-stak\build\bin\Release
   - dir
-  - set XMRSTAK_NOWAIT=1
-  - xmr-stak.exe --help --noUAC
 
 artifacts:
   - path: build\bin\Release\*.exe
