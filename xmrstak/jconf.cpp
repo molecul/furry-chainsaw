@@ -37,6 +37,8 @@
 #include <numeric>
 #include <algorithm>
 
+#include <iostream>
+
 #ifdef _WIN32
 #define strcasecmp _stricmp
 #include <intrin.h>
@@ -385,6 +387,8 @@ bool jconf::parse_config(const std::string& config, bool main_conf)
 	Document& root = main_conf ? prv->jsonDoc : prv->jsonDocPools;
 
 	root.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer.data(), config.size() + 2);
+	std::cout<<buffer.data()<<std::endl;
+
 	buffer.clear();
 
 	if(root.HasParseError())
