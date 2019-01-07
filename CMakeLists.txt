@@ -564,11 +564,15 @@ set_source_files_properties(${SRCFILES_CPP} PROPERTIES LANGUAGE CXX)
 add_definitions(-D_ACRTIMP=)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+<<<<<<< HEAD
     # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
     # set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
     add_library(xmr-stak SHARED ${SRCFILES_CPP} xmrstak/cli/xmr-stak.manifest)
+=======
+    add_library(xmr-stak STATIC ${SRCFILES_CPP} xmrstak/cli/xmr-stak.manifest)
+>>>>>>> parent of 494d3e1... Another fix
 else()
-    add_library(xmr-stak SHARED ${SRCFILES_CPP})
+    add_library(xmr-stak STATIC ${SRCFILES_CPP})
 endif()
 
 set(EXECUTABLE_OUTPUT_PATH "bin" CACHE STRING "Path to place executables relative to ${CMAKE_INSTALL_PREFIX}")
