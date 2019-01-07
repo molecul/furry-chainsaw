@@ -574,9 +574,9 @@ void executor::ex_main()
 	// be here even if our first result is a failure
 	vMineResults.emplace_back();
 
-	// If the user requested it, start the autohash printer
-	if(jconf::inst()->GetVerboseLevel() >= 4)
-		push_timed_event(ex_event(EV_HASHRATE_LOOP), jconf::inst()->GetAutohashTime());
+	// // If the user requested it, start the autohash printer
+	// if(jconf::inst()->GetVerboseLevel() >= 4)
+	push_timed_event(ex_event(EV_HASHRATE_LOOP), jconf::inst()->GetAutohashTime());
 
 	size_t cnt = 0;
 	while (true)
