@@ -4,6 +4,7 @@
 #include "utility.hpp"
 #include "telemetry.hpp"
 #include "../backend/iBackend.hpp"
+#include "../backend/backendConnector.hpp"
 
 using namespace std;
 using namespace xmrstak;
