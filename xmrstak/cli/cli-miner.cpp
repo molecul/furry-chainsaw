@@ -233,7 +233,6 @@ int main(int argc, char *argv[])
 #ifdef _WIN32
 		case 'm':
 			WriteSlot(TEXT("testing of mailslot"));
-			executor::inst()->push_event(ex_event(EV_USR_MAILSLOT));
 			break;
 #endif
 		default:
