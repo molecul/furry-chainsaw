@@ -324,12 +324,16 @@ void executor::on_sock_ready(size_t pool_id)
 	jpsock* pool = pick_pool_by_id(pool_id);
 
 	if(pool->is_dev_pool())
+	{
 		poolConnected = false;
 		printer::inst()->print_msg(L1, "Dev pool connected. Logging in...");
+	}
 	else
+	{
 		poolConnected = true;
 		printer::inst()->print_msg(L1, "Pool %s connected. Logging in...", pool->get_pool_addr());
-
+	}
+	
 	if(!pool->cmd_login())
 	{
 		poolConnected = false;
