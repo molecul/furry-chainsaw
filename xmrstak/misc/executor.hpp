@@ -44,7 +44,6 @@ public:
 	void push_timed_event(ex_event&& ev, size_t sec);
 
 	size_t nthd;
-	executor();
 
 private:
 	struct timed_event
