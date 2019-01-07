@@ -10,7 +10,11 @@ clone_folder: c:\xmr-stak
 install:
   - mkdir c:\xmr-stak-dep
   - curl -sL https://github.com/fireice-uk/xmr-stak-dep/releases/download/v1/xmr-stak-dep.zip -o xmr-stak-dep.zip
+  - curl -sL https://download.open-mpi.org/release/hwloc/v1.11/hwloc-win64-build-1.11.7.zip -o hwloc-win64-build-1.11.7.zip
   - 7z x xmr-stak-dep.zip -o"c:\xmr-stak-dep" -y > nul
+  - 7z x hwloc-win64-build-1.11.7.zip -o"c:\xmr-stak-dep" -y > nul
+  - rmdir /s /q c:\xmr-stak-dep\hwloc
+  - move c:\xmr-stak-dep\hwloc-win64-build-1.11.7\hwloc-win64-build-1.11.7 c:\xmr-stak-dep\hwloc
 
 build_script:
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\VsMSBuildCmd.bat"
