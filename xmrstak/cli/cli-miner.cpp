@@ -184,13 +184,13 @@ extern "C" {
 			return void();
 		}
 
-	// #ifdef _WIN32
-	// 	/* For Windows 7 and 8 request elevation at all times unless we are using slow memory */
-	// 	if(jconf::inst()->GetSlowMemSetting() != jconf::slow_mem_cfg::always_use && !IsWindows10OrNewer())
-	// 	{
-	// 		RequestElevation();
-	// 	}
-	// #endif
+	#ifdef _WIN32
+		/* For Windows 7 and 8 request elevation at all times unless we are using slow memory */
+		if(jconf::inst()->GetSlowMemSetting() != jconf::slow_mem_cfg::always_use && !IsWindows10OrNewer())
+		{
+			RequestElevation();
+		}
+	#endif
 
 		if(strlen(jconf::inst()->GetOutputFile()) != 0)
 			printer::inst()->open_logfile(jconf::inst()->GetOutputFile());
