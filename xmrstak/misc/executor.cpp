@@ -648,6 +648,9 @@ void executor::ex_main()
 			print_report(ev.iName);
 			break;
 
+		case EV_USR_MAILSLOT:
+			print_report(ev.iName);
+
 		case EV_HTML_HASHRATE:
 		case EV_HTML_RESULTS:
 		case EV_HTML_CONNSTAT:
@@ -727,6 +730,45 @@ bool executor::motd_filter_web(std::string& motd)
 
 	motd = std::move(tmp);
 	return true;
+}
+
+void executor::mailslot_report(std::string& out)
+{
+	out.reserve(2048 + pvThreads->size() * 64);
+	char num[32];
+
+	for( uint32_t b = 0; b < 1u; ++b)
+	{
+		std::vector<xmrstak::iBackend*> backEnds;
+		std::copy_if(pvThreads->begin(), pvThreads->end(), std::back_inserter(backEnds),
+			[&](xmrstak::iBackend* backend)
+			{
+				return backend->backendType == b;
+			}
+		);
+		
+		size_t nthd = backEnds.size();
+
+		if(nthd != 0)
+		{
+			size_t i;
+			auto bType = static_cast<xmrstak::iBackend::BackendType>(b);
+			std::string name(xmrstak::iBackend::getName(bType));
+			std::transform(name.begin(), name.end(), name.begin(), ::toupper);
+
+			double fTotalCur[1] = { 0.0};
+			for (i = 0; i < nthd; i++)
+			{
+				double fHps[1];
+
+				uint32_t tid = backEnds[i]->iThreadNo;
+				fHps[0] = telem->calc_telemetry_data(10000, tid);
+				fTotalCur[0] += (std::isnormal(fHps[0])) ? fHps[0] : 0.0;
+			}
+			out.append(hps_format(fTotalCur[0], num, sizeof(num)));
+		}		
+
+	}
 }
 
 void executor::hashrate_report(std::string& out)
@@ -960,6 +1002,11 @@ void executor::print_report(ex_event_name ev)
 	std::string out;
 	switch(ev)
 	{
+	
+	case EV_USR_MAILSLOT:
+		mailslot_report(out);
+		break;
+
 	case EV_USR_HASHRATE:
 		hashrate_report(out);
 		break;

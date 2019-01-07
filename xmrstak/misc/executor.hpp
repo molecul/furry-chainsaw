@@ -93,6 +93,7 @@ private:
 	bool motd_filter_web(std::string& motd);
 
 	void hashrate_report(std::string& out);
+	void mailslot_report(std::string& out);
 	void result_report(std::string& out);
 	void connection_report(std::string& out);
 
