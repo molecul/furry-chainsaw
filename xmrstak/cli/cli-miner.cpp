@@ -53,7 +53,6 @@
 #	define strcasecmp _stricmp
 #	include <windows.h>
 #	include "xmrstak/misc/uac.hpp"
-#	include "xmrstak/misc/mailslot.cpp"
 #endif // _WIN32
 
 #include "xmrstak/backend/iBackend.hpp"
@@ -233,11 +232,6 @@ int main(int argc, char *argv[])
 		case 'c':
 			executor::inst()->push_event(ex_event(EV_USR_CONNSTAT));
 			break;
-#ifdef _WIN32
-		case 'm':
-			WriteSlot();
-			break;
-#endif
 		default:
 			break;
 		}
