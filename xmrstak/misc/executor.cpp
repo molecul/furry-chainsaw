@@ -593,18 +593,22 @@ void executor::ex_main()
 		{
 		case EV_SOCK_READY:
 			on_sock_ready(ev.iPoolId);
+			WriteSlot();
 			break;
 
 		case EV_SOCK_ERROR:
 			on_sock_error(ev.iPoolId, std::move(ev.oSocketError.sSocketError), ev.oSocketError.silent);
+			WriteSlot();
 			break;
 
 		case EV_POOL_HAVE_JOB:
 			on_pool_have_job(ev.iPoolId, ev.oPoolJob);
+			WriteSlot();
 			break;
 
 		case EV_MINER_HAVE_RESULT:
 			on_miner_result(ev.iPoolId, ev.oJobResult);
+			WriteSlot();
 			break;
 
 		case EV_EVAL_POOL_CHOICE:
