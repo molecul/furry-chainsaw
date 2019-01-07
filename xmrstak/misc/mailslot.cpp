@@ -16,20 +16,18 @@ BOOL WriteSlot()
     HANDLE hFile = CreateFile(SlotName, GENERIC_WRITE, FILE_SHARE_READ, (LPSECURITY_ATTRIBUTES)NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, (HANDLE)NULL);
     DWORD cbWritten;
     double fTotal = 0.0;
-    // size_t nthd = 2;
 
-    // //nthd = executor::inst()->nthd;
-    // std::cout << "Count of nthd: " << nthd << std::endl;
+    size_t nthd = executor::inst()->nthd;
+    std::cout << "Count of nthd: " << nthd << std::endl;
 
-	// xmrstak::telemetry* telem = new xmrstak::telemetry(nthd);
-	// double fTotal = 0.0;
+	xmrstak::telemetry* telem = new xmrstak::telemetry(nthd);
 
-	// for (size_t i = 0; i < nthd; i++)
-	// {
-	// 	fTotal += telem->calc_telemetry_data(10000, i);
-    //     std::cout << "["<<i<<"] "<<"Current hashrate: " << fTotal << " H/s" << std::endl;
-	// }
-	// std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
+	for (size_t i = 0; i < nthd; i++)
+	{
+		fTotal += telem->calc_telemetry_data(10000, i);
+        std::cout << "["<<i<<"] "<<"Current hashrate: " << fTotal << " H/s" << std::endl;
+	}
+	std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
 
     LPTSTR lpszMessage = TEXT("test message");
     return WriteFile(hFile, lpszMessage, (DWORD)(lstrlen(lpszMessage)+1) * sizeof(TCHAR), &cbWritten, (LPOVERLAPPED)NULL);
