@@ -497,6 +497,7 @@ void executor::ex_main()
 
 	// \todo collect all backend threads
 	pvThreads = xmrstak::BackendConnector::thread_starter(oWork);
+	nthd = pvThreads->size();
 
 	if(pvThreads->size()==0)
 	{

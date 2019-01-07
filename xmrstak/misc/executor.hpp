@@ -43,6 +43,9 @@ public:
 	inline void push_event(ex_event&& ev) { oEventQ.push(std::move(ev)); }
 	void push_timed_event(ex_event&& ev, size_t sec);
 
+	size_t nthd;
+	executor();
+
 private:
 	struct timed_event
 	{
@@ -70,7 +73,6 @@ private:
 	std::mutex timed_event_mutex;
 	thdq<ex_event> oEventQ;
 
-	xmrstak::telemetry* telem;
 	std::vector<xmrstak::iBackend*>* pvThreads;
 
 	size_t current_pool_id = invalid_pool_id;
@@ -81,7 +83,7 @@ private:
 
 	jpsock* pick_pool_by_id(size_t pool_id);
 
-	executor();
+	//executor();
 
 	void ex_main();
 
