@@ -138,7 +138,7 @@ xmrstak::configEditor do_guided_config()
 	return configTpl;
 }
 extern "C" {
-#ifdef WIN32
+#ifdef _WIN32
 	__declspec(dllexport)
 #endif
 
