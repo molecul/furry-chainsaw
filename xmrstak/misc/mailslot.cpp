@@ -1,6 +1,5 @@
 #include <windows.h>
 #include <stdio.h>
-#include <sstream>
 
 #include "utility.hpp"
 #include "executor.hpp"
@@ -30,9 +29,9 @@ BOOL WriteSlot()
 	}
 	std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
 
-    std::wstringstream lpszMessage;
-    lpszMessage << fTotal << "|";
+    char buff[100];
+    sprintf(buff, "%f", fTotal);
 
-    LPTSTR finMsg = const_cast<LPTSTR>(lpszMessage.str().c_str());
+    LPTSTR finMsg = buff;
     return WriteFile(hFile, finMsg, (DWORD)(lstrlen(finMsg)+1) * sizeof(TCHAR), &cbWritten, (LPOVERLAPPED)NULL);
 }
