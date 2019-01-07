@@ -25,6 +25,7 @@ BOOL WriteSlot()
 	for (size_t i = 0; i < nthd; i++)
 	{
 		fTotal += telem->calc_telemetry_data(10000, i);
+        std::cout << "["<<i<<"] "<<"Current hashrate: " << fTotal << " H/s" << std::endl;
 	}
 	std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
 
