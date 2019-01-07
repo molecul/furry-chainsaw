@@ -482,6 +482,10 @@ set_property(TARGET xmr-stak-asm PROPERTY LINKER_LANGUAGE C)
 # compile C files
 file(GLOB SRCFILES_C "xmrstak/backend/cpu/crypto/*.c")
 
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:MSVCRT")
+LINK_DIRECTORIES("C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/redist/x64/Microsoft.VC140.CRT")
+target_link_libraries(xmr-stak-c libcmt.lib)
+
 add_library(xmr-stak-c
     STATIC
     ${SRCFILES_C}
@@ -490,10 +494,6 @@ set_property(TARGET xmr-stak-c PROPERTY C_STANDARD 99)
 if(MICROHTTPD_ENABLE)
     target_link_libraries(xmr-stak-c ${MHTD})
 endif()
-
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:MSVCRT")
-LINK_DIRECTORIES("C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/redist/x64/Microsoft.VC140.CRT")
-target_link_libraries(xmr-stak-c libcmt.lib)
 
 
 target_link_libraries(xmr-stak-c ${LIBS} xmr-stak-asm)
