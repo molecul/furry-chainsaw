@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
 			break;
 #ifdef _WIN32
 		case 'm':
-			WriteSlot(TEXT("testing of mailslot"));
+			WriteSlot();
 			break;
 #endif
 		default:
