@@ -18,7 +18,7 @@ build_script:
   - mkdir build
   - cd build
   - set CMAKE_PREFIX_PATH=C:\xmr-stak-dep\hwloc
-  - cmake -G "Visual Studio 14 2015 Win64" -T v140,host=x64 .. -DMICROHTTPD_ENABLE=OFF -DXMR-STAK_COMPILE=generic -DOpenCL_ENABLE=OFF -DCUDA_ENABLE=OFF -DCMAKE_LINK_STATIC=ON -DOpenSSL_ENABLE=OFF
+  - cmake -G "Visual Studio 14 2015 Win64" -T v140,host=x64 .. -DMICROHTTPD_ENABLE=OFF -DXMR-STAK_COMPILE=generic -DOpenCL_ENABLE=OFF -DCUDA_ENABLE=OFF -DCMAKE_LINK_STATIC=ON -DOpenSSL_ENABLE=OFF -DBUILD_SHARED_LIBS=ON
   - cmake --build . --config Release --target install
 
 test_script:
