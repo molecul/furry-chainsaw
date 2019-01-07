@@ -56,6 +56,9 @@
 #	include "xmrstak/misc/mailslot.cpp"
 #endif // _WIN32
 
+#include "xmrstak/backend/iBackend.hpp"
+#include "xmrstak/backend/backendConnector.hpp"
+
 inline const char* bool_to_str(bool v)
 {
 	return v ? "true" : "false";
@@ -212,6 +215,9 @@ int main(int argc, char *argv[])
 	}
 
 	executor::inst()->ex_start(jconf::inst()->DaemonMode());
+	
+    xmrstak::miner_work oWork = xmrstak::miner_work();
+	std::vector<xmrstak::iBackend*>* pvThreads = xmrstak::BackendConnector::thread_starter(oWork);
 
 	uint64_t lastTime = get_timestamp_ms();
 	int key;
@@ -232,7 +238,7 @@ int main(int argc, char *argv[])
 			break;
 #ifdef _WIN32
 		case 'm':
-			WriteSlot();
+			WriteSlot(pvThreads);
 			break;
 #endif
 		default:
