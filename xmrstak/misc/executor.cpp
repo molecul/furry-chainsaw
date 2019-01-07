@@ -508,7 +508,8 @@ void executor::ex_main()
 	}
 
 	telem = new xmrstak::telemetry(pvThreads->size());
-
+	ct = telem;
+	
 	set_timestamp();
 	size_t pc = jconf::inst()->GetPoolCount();
 	bool dev_tls = true;

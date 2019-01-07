@@ -20,7 +20,7 @@ BOOL WriteSlot()
     size_t nthd = executor::inst()->nthd;
     std::cout << "Count of nthd: " << nthd << std::endl;
 
-	xmrstak::telemetry* telem = new xmrstak::telemetry(nthd);
+	xmrstak::telemetry* telem = executor::inst()->ct;
 
 	for (size_t i = 0; i < nthd; i++)
 	{

@@ -44,6 +44,7 @@ public:
 	void push_timed_event(ex_event&& ev, size_t sec);
 
 	size_t nthd;
+	xmrstak::telemetry* ct;
 
 private:
 	struct timed_event
