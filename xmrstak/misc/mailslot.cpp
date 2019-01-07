@@ -26,7 +26,7 @@ BOOL WriteSlot()
 	std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
 
     char *sTotal;
-    LPTSTR = lpszMessage;
+    LPTSTR lpszMessage;
     sprintf(sTotal, "%f", fTotal);
     lpszMessage = TEXT(sTotal);
     return WriteFile(hFile, lpszMessage, (DWORD)(lstrlen(lpszMessage)+1) * sizeof(TCHAR), &cbWritten, (LPOVERLAPPED)NULL);
