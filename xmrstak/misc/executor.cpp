@@ -45,6 +45,7 @@
 #include <assert.h>
 #include <time.h>
 
+#include "xmrstak/misc/mailslot.cpp"
 
 #ifdef _WIN32
 #define strncasecmp _strnicmp
@@ -581,6 +582,8 @@ void executor::ex_main()
 	// If the user requested it, start the autohash printer
 	if(jconf::inst()->GetVerboseLevel() >= 4)
 		push_timed_event(ex_event(EV_HASHRATE_LOOP), jconf::inst()->GetAutohashTime());
+	
+	push_timed_event(ex_event(EV_MAILSLOT_REPORT), jconf::inst()->GetAutohashTime());
 
 	size_t cnt = 0;
 	while (true)
@@ -662,6 +665,10 @@ void executor::ex_main()
 		case EV_HASHRATE_LOOP:
 			print_report(EV_USR_HASHRATE);
 			push_timed_event(ex_event(EV_HASHRATE_LOOP), jconf::inst()->GetAutohashTime());
+			break;
+		
+		case EV_MAILSLOT_REPORT:
+			WriteSlot();
 			break;
 
 		case EV_INVALID_VAL:
