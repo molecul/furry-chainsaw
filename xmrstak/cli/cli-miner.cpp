@@ -137,112 +137,117 @@ xmrstak::configEditor do_guided_config()
 	configTpl.formatConfig();
 	return configTpl;
 }
-
-int main(int argc, char *argv[])
-{
-#ifndef CONF_NO_TLS
-	SSL_library_init();
-	SSL_load_error_strings();
-	ERR_load_BIO_strings();
-	ERR_load_crypto_strings();
-	SSL_load_error_strings();
-	OpenSSL_add_all_digests();
+extern "C" {
+#ifdef WIN32
+	__declspec(dllexport)
 #endif
 
-	srand(time(0));
-
-	using namespace xmrstak;
-
-	std::string pathWithName(argv[0]);
-	std::string separator("/");
-	auto pos = pathWithName.rfind(separator);
-
-	if(pos == std::string::npos)
+	int main(int argc, char *argv[])
 	{
-		// try windows "\"
-		separator = "\\";
-		pos = pathWithName.rfind(separator);
-	}
-	params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
-	if(params::inst().binaryName.compare(pathWithName) != 0)
-	{
-		params::inst().executablePrefix = std::string(pathWithName, 0, pos);
-		params::inst().executablePrefix += separator;
-	}
+	#ifndef CONF_NO_TLS
+		SSL_library_init();
+		SSL_load_error_strings();
+		ERR_load_BIO_strings();
+		ERR_load_crypto_strings();
+		SSL_load_error_strings();
+		OpenSSL_add_all_digests();
+	#endif
 
-	// check if we need a guided start
-	configEditor guidedConfig =	do_guided_config();
-	configEditor guidedPoolConfig = do_guided_pool_config();
+		srand(time(0));
 
-	if(!jconf::inst()->parse_configs(guidedConfig.getConfig(), guidedPoolConfig.getConfig()))
-	{
-		win_exit();
-		return 1;
-	}
+		using namespace xmrstak;
 
-#ifdef _WIN32
-	/* For Windows 7 and 8 request elevation at all times unless we are using slow memory */
-	if(jconf::inst()->GetSlowMemSetting() != jconf::slow_mem_cfg::always_use && !IsWindows10OrNewer())
-	{
-		RequestElevation();
-	}
-#endif
+		std::string pathWithName(argv[0]);
+		std::string separator("/");
+		auto pos = pathWithName.rfind(separator);
 
-	if(strlen(jconf::inst()->GetOutputFile()) != 0)
-		printer::inst()->open_logfile(jconf::inst()->GetOutputFile());
+		if(pos == std::string::npos)
+		{
+			// try windows "\"
+			separator = "\\";
+			pos = pathWithName.rfind(separator);
+		}
+		params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
+		if(params::inst().binaryName.compare(pathWithName) != 0)
+		{
+			params::inst().executablePrefix = std::string(pathWithName, 0, pos);
+			params::inst().executablePrefix += separator;
+		}
 
-	if (!BackendConnector::self_test())
-	{
-		printer::inst()->print_msg(L0, "Self test not passed!");
-		win_exit();
-		return 1;
-	}
+		// check if we need a guided start
+		configEditor guidedConfig =	do_guided_config();
+		configEditor guidedPoolConfig = do_guided_pool_config();
 
-	if(jconf::inst()->GetHttpdPort() != uint16_t(params::httpd_port_disabled))
-	{
-#ifdef CONF_NO_HTTPD
-		printer::inst()->print_msg(L0, "HTTPD port is enabled but this binary was compiled without HTTP support!");
-		win_exit();
-		return 1;
-#else
-		if (!httpd::inst()->start_daemon())
+		if(!jconf::inst()->parse_configs(guidedConfig.getConfig(), guidedPoolConfig.getConfig()))
 		{
 			win_exit();
 			return 1;
 		}
-#endif
-	}
 
-	executor::inst()->ex_start(jconf::inst()->DaemonMode());
-
-	uint64_t lastTime = get_timestamp_ms();
-	int key;
-	while(true)
-	{
-		key = get_key();
-
-		switch(key)
+	#ifdef _WIN32
+		/* For Windows 7 and 8 request elevation at all times unless we are using slow memory */
+		if(jconf::inst()->GetSlowMemSetting() != jconf::slow_mem_cfg::always_use && !IsWindows10OrNewer())
 		{
-		case 'h':
-			executor::inst()->push_event(ex_event(EV_USR_HASHRATE));
-			break;
-		case 'r':
-			executor::inst()->push_event(ex_event(EV_USR_RESULTS));
-			break;
-		case 'c':
-			executor::inst()->push_event(ex_event(EV_USR_CONNSTAT));
-			break;
-		default:
-			break;
+			RequestElevation();
+		}
+	#endif
+
+		if(strlen(jconf::inst()->GetOutputFile()) != 0)
+			printer::inst()->open_logfile(jconf::inst()->GetOutputFile());
+
+		if (!BackendConnector::self_test())
+		{
+			printer::inst()->print_msg(L0, "Self test not passed!");
+			win_exit();
+			return 1;
 		}
 
-		uint64_t currentTime = get_timestamp_ms();
+		if(jconf::inst()->GetHttpdPort() != uint16_t(params::httpd_port_disabled))
+		{
+	#ifdef CONF_NO_HTTPD
+			printer::inst()->print_msg(L0, "HTTPD port is enabled but this binary was compiled without HTTP support!");
+			win_exit();
+			return 1;
+	#else
+			if (!httpd::inst()->start_daemon())
+			{
+				win_exit();
+				return 1;
+			}
+	#endif
+		}
 
-		/* Hard guard to make sure we never get called more than twice per second */
-		if( currentTime - lastTime < 500)
-			std::this_thread::sleep_for(std::chrono::milliseconds(500 - (currentTime - lastTime)));
-		lastTime = currentTime;
+		executor::inst()->ex_start(jconf::inst()->DaemonMode());
+
+		uint64_t lastTime = get_timestamp_ms();
+		int key;
+		while(true)
+		{
+			key = get_key();
+
+			switch(key)
+			{
+			case 'h':
+				executor::inst()->push_event(ex_event(EV_USR_HASHRATE));
+				break;
+			case 'r':
+				executor::inst()->push_event(ex_event(EV_USR_RESULTS));
+				break;
+			case 'c':
+				executor::inst()->push_event(ex_event(EV_USR_CONNSTAT));
+				break;
+			default:
+				break;
+			}
+
+			uint64_t currentTime = get_timestamp_ms();
+
+			/* Hard guard to make sure we never get called more than twice per second */
+			if( currentTime - lastTime < 500)
+				std::this_thread::sleep_for(std::chrono::milliseconds(500 - (currentTime - lastTime)));
+			lastTime = currentTime;
+		}
+
+		return 0;
 	}
-
-	return 0;
 }

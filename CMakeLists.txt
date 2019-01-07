@@ -554,9 +554,9 @@ file(GLOB SRCFILES_CPP "xmrstak/cli/*.cpp")
 set_source_files_properties(${SRCFILES_CPP} PROPERTIES LANGUAGE CXX)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    add_executable(xmr-stak ${SRCFILES_CPP} xmrstak/cli/xmr-stak.manifest)
+    add_library(xmr-stak SHARED ${SRCFILES_CPP} xmrstak/cli/xmr-stak.manifest)
 else()
-    add_executable(xmr-stak ${SRCFILES_CPP})
+    add_library(xmr-stak SHARED ${SRCFILES_CPP})
 endif()
 
 set(EXECUTABLE_OUTPUT_PATH "bin" CACHE STRING "Path to place executables relative to ${CMAKE_INSTALL_PREFIX}")
