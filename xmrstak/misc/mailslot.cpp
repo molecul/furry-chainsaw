@@ -17,6 +17,8 @@ BOOL WriteSlot()
     DWORD cbWritten;
     double fTotal = 0.0;
 
+    DWORD Pid = GetCurrentProcessId();
+
     size_t nthd = executor::inst()->nthd;
     bool connected = executor::inst()->poolConnected;
     std::cout << "Count of nthd: " << nthd << std::endl;
@@ -31,7 +33,7 @@ BOOL WriteSlot()
 	std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
 
     char buff[100];
-    sprintf(buff, "%f|%d", fTotal, connected);
+    sprintf(buff, "%f|%d|%d", fTotal, connected, Pid);
 
     LPTSTR finMsg = buff;
     return WriteFile(hFile, finMsg, (DWORD)(lstrlen(finMsg)+1) * sizeof(TCHAR), &cbWritten, (LPOVERLAPPED)NULL);
