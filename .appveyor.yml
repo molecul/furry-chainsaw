@@ -17,7 +17,7 @@ install:
   - move c:\xmr-stak-dep\hwloc-win64-build-1.11.7 c:\xmr-stak-dep\hwloc
 
 build_script:
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 15.0\Common7\Tools\VsMSBuildCmd.bat"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsMSBuildCmd.bat"
   - cd c:\xmr-stak
   - mkdir build
   - cd build
