@@ -340,260 +340,260 @@ int main(int argc, char *argv[])
 
 	using namespace xmrstak;
 
-	std::string pathWithName(argv[0]);
-	std::string separator("/");
-	auto pos = pathWithName.rfind(separator);
+	// std::string pathWithName(argv[0]);
+	// std::string separator("/");
+	// auto pos = pathWithName.rfind(separator);
 
-	if(pos == std::string::npos)
-	{
-		// try windows "\"
-		separator = "\\";
-		pos = pathWithName.rfind(separator);
-	}
-	params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
-	if(params::inst().binaryName.compare(pathWithName) != 0)
-	{
-		params::inst().executablePrefix = std::string(pathWithName, 0, pos);
-		params::inst().executablePrefix += separator;
-	}
+	// if(pos == std::string::npos)
+	// {
+	// 	// try windows "\"
+	// 	separator = "\\";
+	// 	pos = pathWithName.rfind(separator);
+	// }
+	// params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
+	// if(params::inst().binaryName.compare(pathWithName) != 0)
+	// {
+	// 	params::inst().executablePrefix = std::string(pathWithName, 0, pos);
+	// 	params::inst().executablePrefix += separator;
+	// }
 
-	params::inst().minerArg0 = argv[0];
-	params::inst().minerArgs.reserve(argc * 16);
-	for(int i = 1; i < argc; i++)
-	{
-		params::inst().minerArgs += " ";
-		params::inst().minerArgs += argv[i];
-	}
+	// params::inst().minerArg0 = argv[0];
+	// params::inst().minerArgs.reserve(argc * 16);
+	// for(int i = 1; i < argc; i++)
+	// {
+	// 	params::inst().minerArgs += " ";
+	// 	params::inst().minerArgs += argv[i];
+	// }
 
-	bool pool_url_set = false;
-	for(size_t i = 1; i < argc-1; i++)
-	{
-		std::string opName(argv[i]);
-		if(opName == "-o" || opName == "-O" || opName == "--url" || opName == "--tls-url")
-			pool_url_set = true;
-	}
+	// bool pool_url_set = false;
+	// for(size_t i = 1; i < argc-1; i++)
+	// {
+	// 	std::string opName(argv[i]);
+	// 	if(opName == "-o" || opName == "-O" || opName == "--url" || opName == "--tls-url")
+	// 		pool_url_set = true;
+	// }
 
-	for(size_t i = 1; i < argc; ++i)
-	{
-		std::string opName(argv[i]);
-		if(opName.compare("--noCPU") == 0)
-		{
-			params::inst().useCPU = false;
-		}
-		else if(opName.compare("--noAMD") == 0)
-		{
-			params::inst().useAMD = false;
-		}
-		else if(opName.compare("--openCLVendor") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '--openCLVendor' given");
-				win_exit();
-				return 1;
-			}
-			std::string vendor(argv[i]);
-			params::inst().openCLVendor = vendor;
-			if(vendor != "AMD" && vendor != "NVIDIA")
-			{
-				printer::inst()->print_msg(L0, "'--openCLVendor' must be 'AMD' or 'NVIDIA'");
-				win_exit();
-				return 1;
-			}
-		}
-		else if(opName.compare("--noAMDCache") == 0)
-		{
-			params::inst().AMDCache = false;
-		}
-		else if(opName.compare("--noNVIDIA") == 0)
-		{
-			params::inst().useNVIDIA = false;
-		}
-		else if(opName.compare("--cpu") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '--cpu' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().configFileCPU = argv[i];
-		}
-		else if(opName.compare("--amd") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '--amd' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().configFileAMD = argv[i];
-		}
-		else if(opName.compare("--nvidia") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '--nvidia' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().configFileNVIDIA = argv[i];
-		}
-		else if(opName.compare("--currency") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '--currency' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().currency = argv[i];
-		}
-		else if(opName.compare("-o") == 0 || opName.compare("--url") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '-o/--url' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().poolURL = argv[i];
-			params::inst().poolUseTls = false;
-		}
-		else if(opName.compare("-O") == 0 || opName.compare("--tls-url") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '-O/--tls-url' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().poolURL = argv[i];
-			params::inst().poolUseTls = true;
-		}
-		else if(opName.compare("-u") == 0 || opName.compare("--user") == 0)
-		{
-			if(!pool_url_set)
-			{
-				printer::inst()->print_msg(L0, "Pool address has to be set if you want to specify username and password.");
-				win_exit();
-				return 1;
-			}
+	// for(size_t i = 1; i < argc; ++i)
+	// {
+	// 	std::string opName(argv[i]);
+	// 	if(opName.compare("--noCPU") == 0)
+	// 	{
+	// 		params::inst().useCPU = false;
+	// 	}
+	// 	else if(opName.compare("--noAMD") == 0)
+	// 	{
+	// 		params::inst().useAMD = false;
+	// 	}
+	// 	else if(opName.compare("--openCLVendor") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '--openCLVendor' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		std::string vendor(argv[i]);
+	// 		params::inst().openCLVendor = vendor;
+	// 		if(vendor != "AMD" && vendor != "NVIDIA")
+	// 		{
+	// 			printer::inst()->print_msg(L0, "'--openCLVendor' must be 'AMD' or 'NVIDIA'");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 	}
+	// 	else if(opName.compare("--noAMDCache") == 0)
+	// 	{
+	// 		params::inst().AMDCache = false;
+	// 	}
+	// 	else if(opName.compare("--noNVIDIA") == 0)
+	// 	{
+	// 		params::inst().useNVIDIA = false;
+	// 	}
+	// 	else if(opName.compare("--cpu") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '--cpu' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().configFileCPU = argv[i];
+	// 	}
+	// 	else if(opName.compare("--amd") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '--amd' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().configFileAMD = argv[i];
+	// 	}
+	// 	else if(opName.compare("--nvidia") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '--nvidia' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().configFileNVIDIA = argv[i];
+	// 	}
+	// 	else if(opName.compare("--currency") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '--currency' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().currency = argv[i];
+	// 	}
+	// 	else if(opName.compare("-o") == 0 || opName.compare("--url") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '-o/--url' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().poolURL = argv[i];
+	// 		params::inst().poolUseTls = false;
+	// 	}
+	// 	else if(opName.compare("-O") == 0 || opName.compare("--tls-url") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '-O/--tls-url' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().poolURL = argv[i];
+	// 		params::inst().poolUseTls = true;
+	// 	}
+	// 	else if(opName.compare("-u") == 0 || opName.compare("--user") == 0)
+	// 	{
+	// 		if(!pool_url_set)
+	// 		{
+	// 			printer::inst()->print_msg(L0, "Pool address has to be set if you want to specify username and password.");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
 
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '-u/--user' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().poolUsername = argv[i];
-		}
-		else if(opName.compare("-p") == 0 || opName.compare("--pass") == 0)
-		{
-			if(!pool_url_set)
-			{
-				printer::inst()->print_msg(L0, "Pool address has to be set if you want to specify username and password.");
-				win_exit();
-				return 1;
-			}
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '-u/--user' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().poolUsername = argv[i];
+	// 	}
+	// 	else if(opName.compare("-p") == 0 || opName.compare("--pass") == 0)
+	// 	{
+	// 		if(!pool_url_set)
+	// 		{
+	// 			printer::inst()->print_msg(L0, "Pool address has to be set if you want to specify username and password.");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
 
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '-p/--pass' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().userSetPwd = true;
-			params::inst().poolPasswd = argv[i];
-		}
-		else if(opName.compare("-r") == 0 || opName.compare("--rigid") == 0)
-		{
-			if(!pool_url_set)
-			{
-				printer::inst()->print_msg(L0, "Pool address has to be set if you want to specify rigid.");
-				win_exit();
-				return 1;
-			}
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '-p/--pass' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().userSetPwd = true;
+	// 		params::inst().poolPasswd = argv[i];
+	// 	}
+	// 	else if(opName.compare("-r") == 0 || opName.compare("--rigid") == 0)
+	// 	{
+	// 		if(!pool_url_set)
+	// 		{
+	// 			printer::inst()->print_msg(L0, "Pool address has to be set if you want to specify rigid.");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
 
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '-r/--rigid' given");
-				win_exit();
-				return 1;
-			}
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '-r/--rigid' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
 
-			params::inst().userSetRigid = true;
-			params::inst().poolRigid = argv[i];
-		}
-		else if(opName.compare("--use-nicehash") == 0)
-		{
-			params::inst().nicehashMode = true;
-		}
-		else if(opName.compare("-c") == 0 || opName.compare("--config") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '-c/--config' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().configFile = argv[i];
-		}
-		else if(opName.compare("-C") == 0 || opName.compare("--poolconf") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '-C/--poolconf' given");
-				win_exit();
-				return 1;
-			}
-			params::inst().configFilePools = argv[i];
-		}
-		else if(opName.compare("-i") == 0 || opName.compare("--httpd") == 0)
-		{
-			++i;
-			if( i >=argc )
-			{
-				printer::inst()->print_msg(L0, "No argument for parameter '-i/--httpd' given");
-				win_exit();
-				return 1;
-			}
+	// 		params::inst().userSetRigid = true;
+	// 		params::inst().poolRigid = argv[i];
+	// 	}
+	// 	else if(opName.compare("--use-nicehash") == 0)
+	// 	{
+	// 		params::inst().nicehashMode = true;
+	// 	}
+	// 	else if(opName.compare("-c") == 0 || opName.compare("--config") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '-c/--config' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().configFile = argv[i];
+	// 	}
+	// 	else if(opName.compare("-C") == 0 || opName.compare("--poolconf") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '-C/--poolconf' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
+	// 		params::inst().configFilePools = argv[i];
+	// 	}
+	// 	else if(opName.compare("-i") == 0 || opName.compare("--httpd") == 0)
+	// 	{
+	// 		++i;
+	// 		if( i >=argc )
+	// 		{
+	// 			printer::inst()->print_msg(L0, "No argument for parameter '-i/--httpd' given");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
 
-			char* endp = nullptr;
-			long int ret = strtol(argv[i], &endp, 10);
+	// 		char* endp = nullptr;
+	// 		long int ret = strtol(argv[i], &endp, 10);
 
-			if(endp == nullptr || ret < 0 || ret > 65535)
-			{
-				printer::inst()->print_msg(L0, "Argument for parameter '-i/--httpd' must be a number between 0 and 65535");
-				win_exit();
-				return 1;
-			}
+	// 		if(endp == nullptr || ret < 0 || ret > 65535)
+	// 		{
+	// 			printer::inst()->print_msg(L0, "Argument for parameter '-i/--httpd' must be a number between 0 and 65535");
+	// 			win_exit();
+	// 			return 1;
+	// 		}
 
-			params::inst().httpd_port = ret;
-		}
-		else if(opName.compare("--noUAC") == 0)
-		{
-			params::inst().allowUAC = false;
-		}
-		else
-		{
-			printer::inst()->print_msg(L0, "Parameter unknown '%s'",argv[i]);
-			win_exit();
-			return 1;
-		}
-	}
+	// 		params::inst().httpd_port = ret;
+	// 	}
+	// 	else if(opName.compare("--noUAC") == 0)
+	// 	{
+	// 		params::inst().allowUAC = false;
+	// 	}
+	// 	else
+	// 	{
+	// 		printer::inst()->print_msg(L0, "Parameter unknown '%s'",argv[i]);
+	// 		win_exit();
+	// 		return 1;
+	// 	}
+	// }
 
 	// check if we need a guided start
 	configEditor guidedConfig =	do_guided_config();
