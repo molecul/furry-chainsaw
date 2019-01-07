@@ -340,22 +340,22 @@ int main(int argc, char *argv[])
 
 	using namespace xmrstak;
 
-	// std::string pathWithName(argv[0]);
-	// std::string separator("/");
-	// auto pos = pathWithName.rfind(separator);
+	std::string pathWithName(argv[0]);
+	std::string separator("/");
+	auto pos = pathWithName.rfind(separator);
 
-	// if(pos == std::string::npos)
-	// {
-	// 	// try windows "\"
-	// 	separator = "\\";
-	// 	pos = pathWithName.rfind(separator);
-	// }
-	// params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
-	// if(params::inst().binaryName.compare(pathWithName) != 0)
-	// {
-	// 	params::inst().executablePrefix = std::string(pathWithName, 0, pos);
-	// 	params::inst().executablePrefix += separator;
-	// }
+	if(pos == std::string::npos)
+	{
+		// try windows "\"
+		separator = "\\";
+		pos = pathWithName.rfind(separator);
+	}
+	params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
+	if(params::inst().binaryName.compare(pathWithName) != 0)
+	{
+		params::inst().executablePrefix = std::string(pathWithName, 0, pos);
+		params::inst().executablePrefix += separator;
+	}
 
 	// params::inst().minerArg0 = argv[0];
 	// params::inst().minerArgs.reserve(argc * 16);
