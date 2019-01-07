@@ -232,8 +232,8 @@ int main(int argc, char *argv[])
 			break;
 #ifdef _WIN32
 		case 'm':
-			WriteSlot(hFile, TEXT("testing of mailslot"))		
-			break
+			WriteSlot(hFile, TEXT("testing of mailslot"));
+			break;
 #endif
 		default:
 			break;
