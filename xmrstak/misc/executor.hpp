@@ -45,6 +45,7 @@ public:
 
 	size_t nthd;
 	xmrstak::telemetry* ct;
+	bool poolConnected;
 
 private:
 	struct timed_event

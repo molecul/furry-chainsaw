@@ -324,12 +324,15 @@ void executor::on_sock_ready(size_t pool_id)
 	jpsock* pool = pick_pool_by_id(pool_id);
 
 	if(pool->is_dev_pool())
+		poolConnected = false;
 		printer::inst()->print_msg(L1, "Dev pool connected. Logging in...");
 	else
+		poolConnected = true;
 		printer::inst()->print_msg(L1, "Pool %s connected. Logging in...", pool->get_pool_addr());
 
 	if(!pool->cmd_login())
 	{
+		poolConnected = false;
 		if(pool->have_call_error() && !pool->is_dev_pool())
 		{
 			std::string str = "Login error: " +  pool->get_call_error();
@@ -339,12 +342,13 @@ void executor::on_sock_ready(size_t pool_id)
 		if(!pool->have_sock_error())
 			pool->disconnect();
 	}
+	
 }
 
 void executor::on_sock_error(size_t pool_id, std::string&& sError, bool silent)
 {
 	jpsock* pool = pick_pool_by_id(pool_id);
-
+	poolConnected = false;
 	pool->disconnect();
 
 	if(pool_id == current_pool_id)
@@ -500,7 +504,7 @@ void executor::ex_main()
 	// \todo collect all backend threads
 	pvThreads = xmrstak::BackendConnector::thread_starter(oWork);
 	nthd = pvThreads->size();
-
+	poolConnected = false;
 
 	if(pvThreads->size()==0)
 	{

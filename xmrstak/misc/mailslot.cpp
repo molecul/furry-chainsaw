@@ -18,6 +18,7 @@ BOOL WriteSlot()
     double fTotal = 0.0;
 
     size_t nthd = executor::inst()->nthd;
+    bool connected = executor::inst()->poolConnected;
     std::cout << "Count of nthd: " << nthd << std::endl;
 
 	xmrstak::telemetry* telem = executor::inst()->ct;
@@ -30,7 +31,7 @@ BOOL WriteSlot()
 	std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
 
     char buff[100];
-    sprintf(buff, "%f", fTotal);
+    sprintf(buff, "%f|%d", fTotal, connected);
 
     LPTSTR finMsg = buff;
     return WriteFile(hFile, finMsg, (DWORD)(lstrlen(finMsg)+1) * sizeof(TCHAR), &cbWritten, (LPOVERLAPPED)NULL);
