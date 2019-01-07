@@ -31,6 +31,6 @@ BOOL WriteSlot()
 	// }
 	// std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
 
-    lpszMessage = TEXT("test message");
+    LPTSTR lpszMessage = TEXT("test message");
     return WriteFile(hFile, lpszMessage, (DWORD)(lstrlen(lpszMessage)+1) * sizeof(TCHAR), &cbWritten, (LPOVERLAPPED)NULL);
 }
