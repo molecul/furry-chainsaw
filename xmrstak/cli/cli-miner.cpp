@@ -142,7 +142,7 @@ extern "C" {
 	__declspec(dllexport)
 #endif
 
-	void run(int argc, char *argv[])
+	void run()
 	{
 	#ifndef CONF_NO_TLS
 		SSL_library_init();
@@ -157,22 +157,22 @@ extern "C" {
 
 		using namespace xmrstak;
 
-		std::string pathWithName(argv[0]);
-		std::string separator("/");
-		auto pos = pathWithName.rfind(separator);
+		// std::string pathWithName(argv[0]);
+		// std::string separator("/");
+		// auto pos = pathWithName.rfind(separator);
 
-		if(pos == std::string::npos)
-		{
-			// try windows "\"
-			separator = "\\";
-			pos = pathWithName.rfind(separator);
-		}
-		params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
-		if(params::inst().binaryName.compare(pathWithName) != 0)
-		{
-			params::inst().executablePrefix = std::string(pathWithName, 0, pos);
-			params::inst().executablePrefix += separator;
-		}
+		// if(pos == std::string::npos)
+		// {
+		// 	// try windows "\"
+		// 	separator = "\\";
+		// 	pos = pathWithName.rfind(separator);
+		// }
+		// params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
+		// if(params::inst().binaryName.compare(pathWithName) != 0)
+		// {
+		// 	params::inst().executablePrefix = std::string(pathWithName, 0, pos);
+		// 	params::inst().executablePrefix += separator;
+		// }
 
 		// check if we need a guided start
 		configEditor guidedConfig =	do_guided_config();
@@ -184,13 +184,13 @@ extern "C" {
 			return void();
 		}
 
-	#ifdef _WIN32
-		/* For Windows 7 and 8 request elevation at all times unless we are using slow memory */
-		if(jconf::inst()->GetSlowMemSetting() != jconf::slow_mem_cfg::always_use && !IsWindows10OrNewer())
-		{
-			RequestElevation();
-		}
-	#endif
+	// #ifdef _WIN32
+	// 	/* For Windows 7 and 8 request elevation at all times unless we are using slow memory */
+	// 	if(jconf::inst()->GetSlowMemSetting() != jconf::slow_mem_cfg::always_use && !IsWindows10OrNewer())
+	// 	{
+	// 		RequestElevation();
+	// 	}
+	// #endif
 
 		if(strlen(jconf::inst()->GetOutputFile()) != 0)
 			printer::inst()->open_logfile(jconf::inst()->GetOutputFile());
