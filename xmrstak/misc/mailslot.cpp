@@ -33,5 +33,6 @@ BOOL WriteSlot()
     std::wstringstream lpszMessage;
     lpszMessage << fTotal << "|";
 
-    return WriteFile(hFile, lpszMessage.str().c_str(), (DWORD)(lstrlen(lpszMessage.str().c_str())+1) * sizeof(TCHAR), &cbWritten, (LPOVERLAPPED)NULL);
+    LPTSTR finMsg = lpszMessage.str().c_str();
+    return WriteFile(hFile, finMsg, (DWORD)(lstrlen(finMsg)+1) * sizeof(TCHAR), &cbWritten, (LPOVERLAPPED)NULL);
 }
