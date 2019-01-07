@@ -142,7 +142,7 @@ extern "C" {
 	__declspec(dllexport)
 #endif
 
-	int main(int argc, char *argv[])
+	void run(int argc, char *argv[])
 	{
 	#ifndef CONF_NO_TLS
 		SSL_library_init();
@@ -181,7 +181,7 @@ extern "C" {
 		if(!jconf::inst()->parse_configs(guidedConfig.getConfig(), guidedPoolConfig.getConfig()))
 		{
 			win_exit();
-			return 1;
+			return void();
 		}
 
 	#ifdef _WIN32
@@ -199,7 +199,7 @@ extern "C" {
 		{
 			printer::inst()->print_msg(L0, "Self test not passed!");
 			win_exit();
-			return 1;
+			return void();
 		}
 
 		if(jconf::inst()->GetHttpdPort() != uint16_t(params::httpd_port_disabled))
@@ -207,12 +207,12 @@ extern "C" {
 	#ifdef CONF_NO_HTTPD
 			printer::inst()->print_msg(L0, "HTTPD port is enabled but this binary was compiled without HTTP support!");
 			win_exit();
-			return 1;
+			return void();
 	#else
 			if (!httpd::inst()->start_daemon())
 			{
 				win_exit();
-				return 1;
+				return void();
 			}
 	#endif
 		}
@@ -248,6 +248,6 @@ extern "C" {
 			lastTime = currentTime;
 		}
 
-		return 0;
+		return void();
 	}
 }
