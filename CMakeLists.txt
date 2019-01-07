@@ -568,8 +568,8 @@ set(EXECUTABLE_OUTPUT_PATH "bin" CACHE STRING "Path to place executables relativ
 set(LIBRARY_OUTPUT_PATH "bin" CACHE STRING "Path to place libraries relative to ${CMAKE_INSTALL_PREFIX}")
 
 
-
-target_link_libraries(xmr-stak ${LIBS} xmr-stak-c xmr-stak-backend xmr-stak-asm libcpmt)
+LINK_DIRECTORIES(C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x64\Microsoft.VC140.CRT)
+target_link_libraries(xmr-stak ${LIBS} xmr-stak-c xmr-stak-backend xmr-stak-asm)
 
 ################################################################################
 # Install
