@@ -487,6 +487,7 @@ void disable_sigpipe()
 inline void disable_sigpipe() {}
 #endif
 
+
 void executor::ex_main()
 {
 	disable_sigpipe();
@@ -498,6 +499,7 @@ void executor::ex_main()
 	// \todo collect all backend threads
 	pvThreads = xmrstak::BackendConnector::thread_starter(oWork);
 	nthd = pvThreads->size();
+
 
 	if(pvThreads->size()==0)
 	{
@@ -575,9 +577,9 @@ void executor::ex_main()
 	// be here even if our first result is a failure
 	vMineResults.emplace_back();
 
-	// // If the user requested it, start the autohash printer
-	// if(jconf::inst()->GetVerboseLevel() >= 4)
-	push_timed_event(ex_event(EV_HASHRATE_LOOP), jconf::inst()->GetAutohashTime());
+	// If the user requested it, start the autohash printer
+	if(jconf::inst()->GetVerboseLevel() >= 4)
+		push_timed_event(ex_event(EV_HASHRATE_LOOP), jconf::inst()->GetAutohashTime());
 
 	size_t cnt = 0;
 	while (true)

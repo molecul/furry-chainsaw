@@ -72,6 +72,7 @@ private:
 	std::mutex timed_event_mutex;
 	thdq<ex_event> oEventQ;
 
+	xmrstak::telemetry* telem;
 	std::vector<xmrstak::iBackend*>* pvThreads;
 
 	size_t current_pool_id = invalid_pool_id;
