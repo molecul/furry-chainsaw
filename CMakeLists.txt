@@ -482,22 +482,14 @@ set_property(TARGET xmr-stak-asm PROPERTY LINKER_LANGUAGE C)
 # compile C files
 file(GLOB SRCFILES_C "xmrstak/backend/cpu/crypto/*.c")
 
-
 add_library(xmr-stak-c
     STATIC
     ${SRCFILES_C}
 )
-
-
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:MSVCRT")
-LINK_DIRECTORIES("C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/redist/x64/Microsoft.VC140.CRT")
-
 set_property(TARGET xmr-stak-c PROPERTY C_STANDARD 99)
 if(MICROHTTPD_ENABLE)
     target_link_libraries(xmr-stak-c ${MHTD})
 endif()
-
-
 target_link_libraries(xmr-stak-c ${LIBS} xmr-stak-asm)
 
 # compile generic backend files
@@ -561,24 +553,21 @@ endif()
 file(GLOB SRCFILES_CPP "xmrstak/cli/*.cpp")
 set_source_files_properties(${SRCFILES_CPP} PROPERTIES LANGUAGE CXX)
 
+add_definitions(-D_VCRTIMP=)
 add_definitions(-D_ACRTIMP=)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-<<<<<<< HEAD
-    # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-    # set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
     add_library(xmr-stak SHARED ${SRCFILES_CPP} xmrstak/cli/xmr-stak.manifest)
-=======
-    add_library(xmr-stak STATIC ${SRCFILES_CPP} xmrstak/cli/xmr-stak.manifest)
->>>>>>> parent of 494d3e1... Another fix
 else()
-    add_library(xmr-stak STATIC ${SRCFILES_CPP})
+    add_library(xmr-stak SHARED ${SRCFILES_CPP})
 endif()
 
 set(EXECUTABLE_OUTPUT_PATH "bin" CACHE STRING "Path to place executables relative to ${CMAKE_INSTALL_PREFIX}")
 set(LIBRARY_OUTPUT_PATH "bin" CACHE STRING "Path to place libraries relative to ${CMAKE_INSTALL_PREFIX}")
 
-target_link_libraries(xmr-stak libcmt ${LIBS} xmr-stak-c xmr-stak-backend xmr-stak-asm)
+target_link_libraries(xmr-stak ${LIBS} xmr-stak-c xmr-stak-backend xmr-stak-asm)
 
 ################################################################################
 # Install
