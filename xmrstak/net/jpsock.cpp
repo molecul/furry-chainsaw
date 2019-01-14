@@ -1,26 +1,3 @@
-/*
-  * This program is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  *
-  * Additional permission under GNU GPL version 3 section 7
-  *
-  * If you modify this Program, or any covered work, by linking or combining
-  * it with OpenSSL (or a modified version of that library), containing parts
-  * covered by the terms of OpenSSL License and SSLeay License, the licensors
-  * of this Program grant you additional permission to convey the resulting work.
-  *
-  */
-
 #include <stdarg.h>
 #include <assert.h>
 #include <algorithm>
@@ -54,19 +31,6 @@ struct jpsock::call_rsp
 };
 
 typedef GenericDocument<UTF8<>, MemoryPoolAllocator<>, MemoryPoolAllocator<>> MemDocument;
-
-/*
- *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * ASSUMPTION - only one calling thread. Multiple calling threads would require better
- * thread safety. The calling thread is assumed to be the executor thread.
- * If there is a reason to call the pool outside of the executor context, consider
- * doing it via an executor event.
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- *
- * Call values and allocators are for the calling thread (executor). When processing
- * a call, the recv thread will make a copy of the call response and then erase its copy.
- */
 
 struct jpsock::opaque_private
 {
@@ -194,14 +158,13 @@ void jpsock::jpsock_thread()
 	jpsock_thd_main();
 
 	if(!bHaveSocketError)
-		set_socket_error("Socket closed.");
+		set_socket_error("#1");
 
 	executor::inst()->push_event(ex_event(std::move(sSocketError), quiet_close, pool_id));
 
 	std::unique_lock<std::mutex> mlock(call_mutex);
 	bool bWait = prv->oCallRsp.pCallData != nullptr;
 
-	// If a call is waiting, wait a little bit before blowing it out of the water
 	if(bWait)
 	{
 		mlock.unlock();
@@ -209,7 +172,6 @@ void jpsock::jpsock_thread()
 		mlock.lock();
 	}
 
-	// If the call is still there send an error to end it
 	bool bCallWaiting = false;
 	if(prv->oCallRsp.pCallData != nullptr)
 	{
@@ -257,7 +219,7 @@ bool jpsock::jpsock_thd_main()
 		if (datalen >= sizeof(buf))
 		{
 			sck->close(false);
-			return set_socket_error("RECEIVE error: data overflow");
+			return set_socket_error("#2");
 		}
 
 		char* lnend;
@@ -277,7 +239,7 @@ bool jpsock::jpsock_thd_main()
 			lnstart = lnend;
 		}
 
-		//Got leftover data? Move it to the front
+
 		if (datalen > 0 && buf != lnstart)
 			memmove(buf, lnstart, datalen);
 	}
@@ -290,16 +252,14 @@ bool jpsock::process_line(char* line, size_t len)
 	prv->callAllocator.Clear();
 	++iMessageCnt;
 
-	/*NULL terminate the line instead of '\n', parsing will add some more NULLs*/
+
 	line[len-1] = '\0';
 
-	//printf("RECV: %s\n", line);
-
 	if (prv->jsonDoc.ParseInsitu(line).HasParseError())
-		return set_socket_error("PARSE error: Invalid JSON");
+		return set_socket_error("#3");
 
 	if (!prv->jsonDoc.IsObject())
-		return set_socket_error("PARSE error: Invalid root");
+		return set_socket_error("#4");
 
 	const Value* mt;
 	if (prv->jsonDoc.HasMember("method"))
@@ -307,20 +267,20 @@ bool jpsock::process_line(char* line, size_t len)
 		mt = GetObjectMember(prv->jsonDoc, "method");
 
 		if(!mt->IsString())
-			return set_socket_error("PARSE error: Protocol error 1");
+			return set_socket_error("#5");
 
 		if(strcmp(mt->GetString(), "mining.set_extranonce") == 0)
 		{
-			printer::inst()->print_msg(L0, "Detected buggy NiceHash pool code. Workaround engaged.");
+			printer::inst()->print_msg(L0, "#6");
 			return true;
 		}
 
 		if(strcmp(mt->GetString(), "job") != 0)
-			return set_socket_error("PARSE error: Unsupported server method ", mt->GetString());
+			return set_socket_error("#7", mt->GetString());
 
 		mt = GetObjectMember(prv->jsonDoc, "params");
 		if(mt == nullptr || !mt->IsObject())
-			return set_socket_error("PARSE error: Protocol error 2");
+			return set_socket_error("#8");
 
 		opq_json_val v(mt);
 		return process_pool_job(&v, iMessageCnt);
@@ -330,7 +290,7 @@ bool jpsock::process_line(char* line, size_t len)
 		uint64_t iCallId;
 		mt = GetObjectMember(prv->jsonDoc, "id");
 		if (mt == nullptr || !mt->IsUint64())
-			return set_socket_error("PARSE error: Protocol error 3");
+			return set_socket_error("#9");
 
 		iCallId = mt->GetUint64();
 
@@ -342,17 +302,17 @@ bool jpsock::process_line(char* line, size_t len)
 		{
 			/* If there was no error we need a result */
 			if ((mt = GetObjectMember(prv->jsonDoc, "result")) == nullptr)
-				return set_socket_error("PARSE error: Protocol error 7");
+				return set_socket_error("#10");
 		}
 		else
 		{
 			if(!mt->IsObject())
-				return set_socket_error("PARSE error: Protocol error 5");
+				return set_socket_error("#11");
 
 			const Value* msg = GetObjectMember(*mt, "message");
 
 			if(msg == nullptr || !msg->IsString())
-				return set_socket_error("PARSE error: Protocol error 6");
+				return set_socket_error("#12");
 
 			iErrorLen = msg->GetStringLength();
 			sError = msg->GetString();
@@ -363,7 +323,7 @@ bool jpsock::process_line(char* line, size_t len)
 		{
 			/*Server sent us a call reply without us making a call*/
 			mlock.unlock();
-			return set_socket_error("PARSE error: Unexpected call response");
+			return set_socket_error("#13");
 		}
 
 		prv->oCallRsp.bHaveResponse = true;
@@ -391,9 +351,6 @@ bool jpsock::process_pool_job(const opq_json_val* params, const uint64_t message
 	std::unique_lock<std::mutex> mlock(job_mutex);
 	if(messageId < iLastMessageId)
 	{
-		/* In the case where the processed job message id is lesser than the last
-		 * processed job message id we skip the processing to avoid mining old jobs
-		 */
 		return true;
 	}
 	iLastMessageId = messageId;
@@ -401,7 +358,7 @@ bool jpsock::process_pool_job(const opq_json_val* params, const uint64_t message
 	mlock.unlock();
 
 	if (!params->val->IsObject())
-		return set_socket_error("PARSE error: Job error 1");
+		return set_socket_error("#14");
 
 	const Value *blob, *jobid, *target, *motd;
 	jobid = GetObjectMember(*params->val, "job_id");
@@ -412,7 +369,7 @@ bool jpsock::process_pool_job(const opq_json_val* params, const uint64_t message
 	if (jobid == nullptr || blob == nullptr || target == nullptr ||
 		!jobid->IsString() || !blob->IsString() || !target->IsString())
 	{
-		return set_socket_error("PARSE error: Job error 2");
+		return set_socket_error("#15");
 	}
 
 	if(motd != nullptr && motd->IsString() && (motd->GetStringLength() & 0x01) == 0)
@@ -429,7 +386,7 @@ bool jpsock::process_pool_job(const opq_json_val* params, const uint64_t message
 	}
 
 	if (jobid->GetStringLength() >= sizeof(pool_job::sJobID)) // Note >=
-		return set_socket_error("PARSE error: Job error 3");
+		return set_socket_error("#16");
 
 	pool_job oPoolJob;
 
@@ -437,20 +394,18 @@ bool jpsock::process_pool_job(const opq_json_val* params, const uint64_t message
 	oPoolJob.iWorkLen = iWorkLen;
 
 	if (iWorkLen > sizeof(pool_job::bWorkBlob))
-		return set_socket_error("PARSE error: Invalid job length. Are you sure you are mining the correct coin?");
+		return set_socket_error("#17");
 
 	if (!hex2bin(blob->GetString(), iWorkLen * 2, oPoolJob.bWorkBlob))
-		return set_socket_error("PARSE error: Job error 4");
+		return set_socket_error("#18");
 
-	// lock reading of oCurrentJob
 	std::unique_lock<std::mutex> jobIdLock(job_mutex);
-	// compare possible non equal length job id's
 	if(iWorkLen == oCurrentJob.iWorkLen &&
 		memcmp(oPoolJob.bWorkBlob, oCurrentJob.bWorkBlob, iWorkLen) == 0 &&
 		strcmp(jobid->GetString(), oCurrentJob.sJobID) == 0
 	)
 	{
-		return set_socket_error("Duplicate equal job detected! Please contact your pool admin.");
+		return set_socket_error("#19");
 	}
 	jobIdLock.unlock();
 
@@ -464,7 +419,7 @@ bool jpsock::process_pool_job(const opq_json_val* params, const uint64_t message
 		char sTempStr[] = "00000000"; // Little-endian CPU FTW
 		memcpy(sTempStr, target->GetString(), target_slen);
 		if(!hex2bin(sTempStr, 8, (unsigned char*)&iTempInt) || iTempInt == 0)
-			return set_socket_error("PARSE error: Invalid target");
+			return set_socket_error("#20");
 
 
 		oPoolJob.iTarget = t32_to_t64(iTempInt);
@@ -475,10 +430,10 @@ bool jpsock::process_pool_job(const opq_json_val* params, const uint64_t message
 		char sTempStr[] = "0000000000000000";
 		memcpy(sTempStr, target->GetString(), target_slen);
 		if(!hex2bin(sTempStr, 16, (unsigned char*)&oPoolJob.iTarget) || oPoolJob.iTarget == 0)
-			return set_socket_error("PARSE error: Invalid target");
+			return set_socket_error("#21");
 	}
 	else
-		return set_socket_error("PARSE error: Job error 5");
+		return set_socket_error("#22");
 
 	iJobDiff = t64_to_diff(oPoolJob.iTarget);
 
@@ -532,9 +487,6 @@ void jpsock::disconnect(bool quiet)
 
 bool jpsock::cmd_ret_wait(const char* sPacket, opq_json_val& poResult, uint64_t& messageId)
 {
-	//printf("SEND: %s\n", sPacket);
-
-	/*Set up the call rsp for the call reply*/
 	prv->oCallValue.SetNull();
 	prv->callAllocator.Clear();
 
@@ -544,11 +496,10 @@ bool jpsock::cmd_ret_wait(const char* sPacket, opq_json_val& poResult, uint64_t&
 
 	if(!sck->send(sPacket))
 	{
-		disconnect(); //This will join the other thread;
+		disconnect();
 		return false;
 	}
 
-	//Success is true if the server approves, result is true if there was no socket error
 	bool bSuccess;
 	mlock.lock();
 	bool bResult = call_cond.wait_for(mlock, std::chrono::seconds(jconf::inst()->GetCallTimeout()),
@@ -564,7 +515,7 @@ bool jpsock::cmd_ret_wait(const char* sPacket, opq_json_val& poResult, uint64_t&
 	//This means that there was no socket error, but the server is not taking to us
 	if(!bResult)
 	{
-		set_socket_error("CALL error: Timeout while waiting for a reply");
+		set_socket_error("#23");
 		disconnect();
 		return false;
 	}
@@ -593,7 +544,7 @@ bool jpsock::cmd_login()
 
 	if (!oResult.val->IsObject())
 	{
-		set_socket_error("PARSE error: Login protocol error 1");
+		set_socket_error("#24");
 		disconnect();
 		return false;
 	}
@@ -604,14 +555,14 @@ bool jpsock::cmd_login()
 
 	if (id == nullptr || job == nullptr || !id->IsString())
 	{
-		set_socket_error("PARSE error: Login protocol error 2");
+		set_socket_error("#25");
 		disconnect();
 		return false;
 	}
 
 	if (id->GetStringLength() >= sizeof(sMinerId))
 	{
-		set_socket_error("PARSE error: Login protocol error 3");
+		set_socket_error("#26");
 		disconnect();
 		return false;
 	}
