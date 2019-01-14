@@ -54,22 +54,22 @@ struct params
 
 	// block_version >= 0 enable benchmark
 	int benchmark_block_version = -1;
-	int benchmark_wait_sec = 30;
-	int benchmark_work_sec = 60;
+	int benchmark_wait_sec = 0;
+	int benchmark_work_sec = 0;
 
 	params() :
-		binaryName("xmr-stak"),
+		binaryName(""),
 		executablePrefix(""),
-		useAMD(true),
-		AMDCache(true),
-		useNVIDIA(true),
+		useAMD(false),
+		AMDCache(false),
+		useNVIDIA(false),
 		useCPU(true),
-		openCLVendor("AMD"),
-		configFile("config.txt"),
-		configFilePools("pools.txt"),
-		configFileAMD("amd.txt"),
-		configFileCPU("cpu.txt"),
-		configFileNVIDIA("nvidia.txt")
+		openCLVendor(""),
+		configFile(""),
+		configFilePools(""),
+		configFileAMD(""),
+		configFileCPU(""),
+		configFileNVIDIA("")
 	{}
 
 };
