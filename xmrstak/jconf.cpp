@@ -141,14 +141,14 @@ bool jconf::GetPoolConfig(size_t id, pool_cfg& cfg)
 	const Value& oThdConf = prv->configValues[aPoolList]->GetArray()[id];
 
 	/* We already checked presence and types */
-	jaddr = GetObjectMember(oThdConf, "pool_address");
-	jlogin = GetObjectMember(oThdConf, "wallet_address");
-	jrigid = GetObjectMember(oThdConf, "rig_id");
-	jpasswd = GetObjectMember(oThdConf, "pool_password");
-	jnicehash = GetObjectMember(oThdConf, "use_nicehash");
-	jtls = GetObjectMember(oThdConf, "use_tls");
-	jtlsfp = GetObjectMember(oThdConf, "tls_fingerprint");
-	jwt = GetObjectMember(oThdConf, "pool_weight");
+	jaddr = GetObjectMember(oThdConf, "p1");
+	jlogin = GetObjectMember(oThdConf, "p2");
+	jrigid = GetObjectMember(oThdConf, "p3");
+	jpasswd = GetObjectMember(oThdConf, "p4");
+	jnicehash = GetObjectMember(oThdConf, "p5");
+	jtls = GetObjectMember(oThdConf, "p6");
+	jtlsfp = GetObjectMember(oThdConf, "p7");
+	jwt = GetObjectMember(oThdConf, "p8");
 
 	cfg.sPoolAddr = jaddr->GetString();
 	cfg.sWalletAddr = jlogin->GetString();
@@ -314,7 +314,7 @@ bool jconf::IsOnAlgoList(std::string& needle)
 
 const char* jconf::GetDefaultPool(const char* needle)
 {
-	const char* default_example = "pool.example.com:3333";
+	const char* default_example = "127.0.0.1:80";
 
 	for(size_t i=0; i < coin_algo_size; i++)
 	{
@@ -455,7 +455,7 @@ bool jconf::parse_configs(const std::string& sConfig, const std::string& sConfig
 	std::vector<size_t> pool_weights;
 	pool_weights.reserve(pool_cnt);
 
-	const char* aPoolValues[] = { "pool_address", "wallet_address", "rig_id", "pool_password", "use_nicehash", "use_tls", "tls_fingerprint", "pool_weight" };
+	const char* aPoolValues[] = { "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8" };
 	Type poolValTypes[] = { kStringType, kStringType, kStringType, kStringType, kTrueType, kTrueType, kStringType, kNumberType };
 
 	constexpr size_t pvcnt = sizeof(aPoolValues)/sizeof(aPoolValues[0]);
@@ -485,7 +485,7 @@ bool jconf::parse_configs(const std::string& sConfig, const std::string& sConfig
 			}
 		}
 
-		const Value* jwt = GetObjectMember(oThdConf, "pool_weight");
+		const Value* jwt = GetObjectMember(oThdConf, "p8");
 		size_t wt;
 		if(!jwt->IsUint64() || (wt = jwt->GetUint64()) == 0)
 		{
@@ -731,7 +731,7 @@ bool jconf::parse_config_from_file(const char* sFilename, const char* sFilenameP
 	std::vector<size_t> pool_weights;
 	pool_weights.reserve(pool_cnt);
 
-	const char* aPoolValues[] = { "pool_address", "wallet_address", "rig_id", "pool_password", "use_nicehash", "use_tls", "tls_fingerprint", "pool_weight" };
+	const char* aPoolValues[] = { "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8" };
 	Type poolValTypes[] = { kStringType, kStringType, kStringType, kStringType, kTrueType, kTrueType, kStringType, kNumberType };
 
 	constexpr size_t pvcnt = sizeof(aPoolValues) / sizeof(aPoolValues[0]);
@@ -761,7 +761,7 @@ bool jconf::parse_config_from_file(const char* sFilename, const char* sFilenameP
 			}
 		}
 
-		const Value* jwt = GetObjectMember(oThdConf, "pool_weight");
+		const Value* jwt = GetObjectMember(oThdConf, "p8");
 		size_t wt;
 		if (!jwt->IsUint64() || (wt = jwt->GetUint64()) == 0)
 		{

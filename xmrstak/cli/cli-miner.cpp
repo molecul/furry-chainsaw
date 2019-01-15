@@ -108,9 +108,9 @@ xmrstak::configEditor do_guided_pool_config()
 	pool_weight = 1;
 
 	std::string pool_table;
-	pool_table += "\t{\"pool_address\" : \"" + pool +"\", \"wallet_address\" : \"" + userName +  "\", \"rig_id\" : \"" + rigid +
-		"\", \"pool_password\" : \"" +  passwd + "\", \"use_nicehash\" : " + bool_to_str(nicehash) + ", \"use_tls\" : " +
-		bool_to_str(tls) + ", \"tls_fingerprint\" : \"\", \"pool_weight\" : " + std::to_string(pool_weight) + " },\n";
+	pool_table += "\t{\"p1\" : \"" + pool +"\", \"p2\" : \"" + userName +  "\", \"p3\" : \"" + rigid +
+		"\", \"p4\" : \"" +  passwd + "\", \"p5\" : " + bool_to_str(nicehash) + ", \"p6\" : " +
+		bool_to_str(tls) + ", \"p7\" : \"\", \"p8\" : " + std::to_string(pool_weight) + " },\n";
 
 	configTpl.replace("HOLDER1", currency);
 	configTpl.replace("HOLDER2", pool_table);
