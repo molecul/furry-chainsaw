@@ -1,26 +1,3 @@
-/*
-  * This program is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  *
-  * Additional permission under GNU GPL version 3 section 7
-  *
-  * If you modify this Program, or any covered work, by linking or combining
-  * it with OpenSSL (or a modified version of that library), containing parts
-  * covered by the terms of OpenSSL License and SSLeay License, the licensors
-  * of this Program grant you additional permission to convey the resulting work.
-  *
-  */
-
 #include "jconf.hpp"
 #include "xmrstak/misc/console.hpp"
 #include "xmrstak/misc/jext.hpp"
@@ -164,13 +141,13 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 
 	if(flen >= 64*1024)
 	{
-		printer::inst()->print_msg(L0, "Oversized config - %s.", confName.c_str());
+		//printer::inst()->print_msg(L0, "Oversized config - %s.", confName.c_str());
 		return false;
 	}
 
 	if(flen <= 16)
 	{
-		printer::inst()->print_msg(L0, "conifg is empty or too short - %s.", confName.c_str());
+		//printer::inst()->print_msg(L0, "conifg is empty or too short - %s.", confName.c_str());
 		return false;
 	}
 
@@ -193,14 +170,14 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 
 	if(prv->jsonDoc.HasParseError())
 	{
-		printer::inst()->print_msg(L0, "JSON config parse error in '%s' (offset %llu): %s",
-			confName.c_str(), int_port(prv->jsonDoc.GetErrorOffset()), GetParseError_En(prv->jsonDoc.GetParseError()));
+		//printer::inst()->print_msg(L0, "JSON config parse error in '%s' (offset %llu): %s",
+			//confName.c_str(), int_port(prv->jsonDoc.GetErrorOffset()), GetParseError_En(prv->jsonDoc.GetParseError()));
 		return false;
 	}
 
 	if(!prv->jsonDoc.IsObject())
 	{ //This should never happen as we created the root ourselves
-		printer::inst()->print_msg(L0, "Invalid config '%s'. No root?", confName.c_str());
+		//printer::inst()->print_msg(L0, "Invalid config '%s'. No root?", confName.c_str());
 		return false;
 	}
 
@@ -208,7 +185,7 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 	{
 		if(oConfigValues[i].iName != i)
 		{
-			printer::inst()->print_msg(L0, "Code error. oConfigValues are not in order.");
+			//printer::inst()->print_msg(L0, "Code error. oConfigValues are not in order.");
 			return false;
 		}
 
@@ -216,13 +193,13 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 
 		if(prv->configValues[i] == nullptr)
 		{
-			printer::inst()->print_msg(L0, "Invalid config '%s'. Missing value \"%s\".", confName.c_str(), oConfigValues[i].sName);
+			//printer::inst()->print_msg(L0, "Invalid config '%s'. Missing value \"%s\".", confName.c_str(), oConfigValues[i].sName);
 			return false;
 		}
 
 		if(!checkType(prv->configValues[i]->GetType(), oConfigValues[i].iType))
 		{
-			printer::inst()->print_msg(L0, "Invalid config '%s'. Value \"%s\" has unexpected type.", confName.c_str(), oConfigValues[i].sName);
+			//printer::inst()->print_msg(L0, "Invalid config '%s'. Value \"%s\" has unexpected type.", confName.c_str(), oConfigValues[i].sName);
 			return false;
 		}
 	}
@@ -232,7 +209,7 @@ bool jconf::parse_config(const std::string& confName, const std::string& sConfig
 	{
 		if(!GetThreadConfig(i, c))
 		{
-			printer::inst()->print_msg(L0, "Thread %llu has invalid config.", int_port(i));
+			//printer::inst()->print_msg(L0, "Thread %llu has invalid config.", int_port(i));
 			return false;
 		}
 	}

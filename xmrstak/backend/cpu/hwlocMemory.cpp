@@ -6,13 +6,6 @@
 
 #include <hwloc.h>
 
-/** pin memory to NUMA node
- *
- * Set the default memory policy for the current thread to bind memory to the
- * NUMA node.
- *
- * @param puId core id
- */
 void bindMemoryToNUMANode( size_t puId )
 {
 	int depth;
@@ -23,7 +16,6 @@ void bindMemoryToNUMANode( size_t puId )
 
 	if(!hwloc_topology_get_support(topology)->membind->set_thisthread_membind)
 	{
-		printer::inst()->print_msg(L0, "hwloc: set_thisthread_membind not supported");
 		hwloc_topology_destroy(topology);
 		return;
 	}
@@ -43,11 +35,10 @@ void bindMemoryToNUMANode( size_t puId )
 				HWLOC_MEMBIND_BIND,
 				HWLOC_MEMBIND_THREAD))
 			{
-				printer::inst()->print_msg(L0, "hwloc: can't bind memory");
+				printer::inst()->print_msg(L0, "");
 			}
 			else
 			{
-				printer::inst()->print_msg(L0, "hwloc: memory pinned");
 				break;
 			}
 		}

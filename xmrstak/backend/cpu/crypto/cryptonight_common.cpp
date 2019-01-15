@@ -1,26 +1,3 @@
-/*
-  * This program is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  *
-  * Additional permission under GNU GPL version 3 section 7
-  *
-  * If you modify this Program, or any covered work, by linking or combining
-  * it with OpenSSL (or a modified version of that library), containing parts
-  * covered by the terms of OpenSSL License and SSLeay License, the licensors
-  * of this Program grant you additional permission to convey the resulting work.
-  *
-  */
-
 extern "C"
 {
 #include "c_groestl.h"
@@ -180,16 +157,15 @@ size_t cryptonight_init(size_t use_fast_mem, size_t use_mlock, alloc_msg* msg)
 
 	if(AddPrivilege(TEXT("SeLockMemoryPrivilege")) == 0)
 	{
-		printer::inst()->print_msg(L0, "Elevating because we need to set up fast memory privileges.");
 		RequestElevation();
 
 		if(AddLargePageRights())
 		{
-			msg->warning = "Added SeLockMemoryPrivilege to the current account. You need to reboot for it to work";
+			msg->warning = "";
 			bRebootDesirable = TRUE;
 		}
 		else
-			msg->warning = "Obtaining SeLockMemoryPrivilege failed.";
+			msg->warning = "";
 
 		return 0;
 	}
@@ -216,8 +192,6 @@ cryptonight_ctx* cryptonight_alloc_ctx(size_t use_fast_mem, size_t use_mlock, al
 		ptr->long_state = (uint8_t*)_mm_malloc(hashMemSize, hashMemSize);
 		ptr->ctx_info[0] = 0;
 		ptr->ctx_info[1] = 0;
-		if(ptr->long_state == NULL)
-			printer::inst()->print_msg(L0, "MEMORY ALLOC FAILED: _mm_malloc was not able to allocate %s byte",std::to_string(hashMemSize).c_str());
 		return ptr;
 	}
 
@@ -234,9 +208,9 @@ cryptonight_ctx* cryptonight_alloc_ctx(size_t use_fast_mem, size_t use_mlock, al
 	{
 		_mm_free(ptr);
 		if(bRebootDesirable)
-			msg->warning = "VirtualAlloc failed. Reboot might help.";
+			msg->warning = "";
 		else
-			msg->warning = "VirtualAlloc failed.";
+			msg->warning = "";
 		return NULL;
 	}
 	else
@@ -263,18 +237,18 @@ cryptonight_ctx* cryptonight_alloc_ctx(size_t use_fast_mem, size_t use_mlock, al
 	if (ptr->long_state == MAP_FAILED)
 	{
 		_mm_free(ptr);
-		msg->warning = "mmap failed, check attribute 'use_slow_memory' in 'config.txt'";
+		msg->warning = "";
 		return NULL;
 	}
 
 	ptr->ctx_info[0] = 1;
 
 	if(madvise(ptr->long_state, hashMemSize, MADV_RANDOM|MADV_WILLNEED) != 0)
-		msg->warning = "madvise failed";
+		msg->warning = "";
 
 	ptr->ctx_info[1] = 0;
 	if(use_mlock != 0 && mlock(ptr->long_state, hashMemSize) != 0)
-		msg->warning = "mlock failed";
+		msg->warning = "";
 	else
 		ptr->ctx_info[1] = 1;
 

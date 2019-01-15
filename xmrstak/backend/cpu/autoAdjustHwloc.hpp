@@ -79,7 +79,6 @@ public:
 			// \todo add fallback to default auto adjust
 			conf += std::string("    { \"low_power_mode\" : false");
 			conf += std::string(", \"no_prefetch\" : true, \"asm\" : \"off\", \"affine_to_cpu\" : false },\n");
-			printer::inst()->print_msg(L0, "Autoconf FAILED: %s. Create config for a single thread.", err.what());
 		}
 
 		configTpl.replace("CPUCONFIG",conf);

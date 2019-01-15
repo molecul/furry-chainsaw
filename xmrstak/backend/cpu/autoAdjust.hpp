@@ -46,20 +46,11 @@ public:
 
 		if(!detectL3Size() || L3KB_size < halfHashMemSizeKB || L3KB_size > (halfHashMemSizeKB * 2048u))
 		{
-			if(L3KB_size < halfHashMemSizeKB || L3KB_size > (halfHashMemSizeKB * 2048))
-				printer::inst()->print_msg(L0, "Autoconf failed: L3 size sanity check failed - %u KB.", L3KB_size);
-
 			conf += std::string("    { \"low_power_mode\" : false, \"no_prefetch\" : true,  \"asm\" : \"off\", \"affine_to_cpu\" : false },\n");
-			printer::inst()->print_msg(L0, "Autoconf FAILED. Create config for a single thread. Please try to add new ones until the hashrate slows down.");
 		}
 		else
 		{
-			printer::inst()->print_msg(L0, "Autoconf L3 size detected at %u KB.", L3KB_size);
-
 			detectCPUConf();
-
-			printer::inst()->print_msg(L0, "Autoconf core count detected as %u on %s.", corecnt,
-				linux_layout ? "Linux" : "Windows");
 
 			uint32_t aff_id = 0;
 			for(uint32_t i=0; i < corecnt; i++)
@@ -115,7 +106,6 @@ private:
 
 			if(get_masked(cpu_info[0], 7, 5) != 3)
 			{
-				printer::inst()->print_msg(L0, "Autoconf failed: Couldn't find L3 cache page.");
 				return false;
 			}
 
@@ -139,7 +129,6 @@ private:
 		}
 		else
 		{
-			printer::inst()->print_msg(L0, "Autoconf failed: Unknown CPU type: %s.", cpustr);
 			return false;
 		}
 	}
