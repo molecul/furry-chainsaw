@@ -66,7 +66,6 @@ struct configEditor
 		//   strip off linux endmarks, keep the lines
 		replace("---LINUX\n", "\n");
 #endif
-		replace("XMRSTAK_VERSION", get_version_str());
 	}
 
 	void writeToFile(const std::string& filename)
