@@ -112,8 +112,8 @@ xmrstak::configEditor do_guided_pool_config()
 		"\", \"pool_password\" : \"" +  passwd + "\", \"use_nicehash\" : " + bool_to_str(nicehash) + ", \"use_tls\" : " +
 		bool_to_str(tls) + ", \"tls_fingerprint\" : \"\", \"pool_weight\" : " + std::to_string(pool_weight) + " },\n";
 
-	configTpl.replace("CURRENCY", currency);
-	configTpl.replace("POOLCONF", pool_table);
+	configTpl.replace("HOLDER1", currency);
+	configTpl.replace("HOLDER2", pool_table);
 	configTpl.formatConfig();
 	return configTpl;
 }

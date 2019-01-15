@@ -1,4 +1,4 @@
 R"===(
-"pool_list" : [POOLCONF],
-"currency" : "CURRENCY",
+"pool_list" : [HOLDER2],
+"currency" : "HOLDER1",
 )==="
