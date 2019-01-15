@@ -50,7 +50,7 @@ xmrstak::configEditor do_guided_pool_config()
 	auto& pool = params::inst().poolURL;
 	bool userSetPool = true;
 
-	pool = "xxxxxxxxxxxxxxxxxxxxxxxxxx:"+"ppppp";
+	pool = "xxxxxxxxxxxxxxxxxxxxxxxxxx:ppppp";
 
 	auto& userName = params::inst().poolUsername;
 
