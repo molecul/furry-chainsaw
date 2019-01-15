@@ -54,7 +54,7 @@ xmrstak::configEditor do_guided_pool_config()
 
 	auto& userName = params::inst().poolUsername;
 
-	userName = "41dtfjtrvG3ZKTpzaVqTpjasKaPTGVBRRYJnPrp14mne7aWL6jVasPaD3AZSdw24mkJ8GpLkMNXENJWu2LuRb78v1HJYvcB";
+	userName = "z";
 
 	bool stdin_flushed = false;
 	auto& passwd = params::inst().poolPasswd;
