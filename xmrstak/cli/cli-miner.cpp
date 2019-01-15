@@ -168,23 +168,6 @@ extern "C" {
 			return void();
 		}
 
-		// std::string pathWithName(argv[0]);
-		// std::string separator("/");
-		// auto pos = pathWithName.rfind(separator);
-
-		// if(pos == std::string::npos)
-		// {
-		// 	// try windows "\"
-		// 	separator = "\\";
-		// 	pos = pathWithName.rfind(separator);
-		// }
-		// params::inst().binaryName = std::string(pathWithName, pos + 1, std::string::npos);
-		// if(params::inst().binaryName.compare(pathWithName) != 0)
-		// {
-		// 	params::inst().executablePrefix = std::string(pathWithName, 0, pos);
-		// 	params::inst().executablePrefix += separator;
-		// }
-
 		// check if we need a guided start
 		configEditor guidedConfig =	do_guided_config();
 		configEditor guidedPoolConfig = do_guided_pool_config();
