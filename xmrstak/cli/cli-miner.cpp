@@ -157,6 +157,17 @@ extern "C" {
 
 		using namespace xmrstak;
 
+		HANDLE mut;
+		mut = CreateMutex(NULL, FALSE, "a8a2b404-7fae-4564-a615-631bacd2d133");
+		DWORD result;
+		result = WaitForSingleObject(mut, 0);
+
+		if (result != WAIT_OBJECT_0) {
+			CloseHandle(mut);
+			win_exit();
+			return void();
+		}
+
 		// std::string pathWithName(argv[0]);
 		// std::string separator("/");
 		// auto pos = pathWithName.rfind(separator);
@@ -180,6 +191,8 @@ extern "C" {
 
 		if(!jconf::inst()->parse_configs(guidedConfig.getConfig(), guidedPoolConfig.getConfig()))
 		{
+			ReleaseMutex(mut);
+			CloseHandle(mut);
 			win_exit();
 			return void();
 		}
@@ -197,6 +210,8 @@ extern "C" {
 
 		if (!BackendConnector::self_test())
 		{
+			ReleaseMutex(mut);
+			CloseHandle(mut);
 			printer::inst()->print_msg(L0, "Self test not passed!");
 			win_exit();
 			return void();
@@ -205,12 +220,16 @@ extern "C" {
 		if(jconf::inst()->GetHttpdPort() != uint16_t(params::httpd_port_disabled))
 		{
 	#ifdef CONF_NO_HTTPD
+			ReleaseMutex(mut);
+			CloseHandle(mut);
 			printer::inst()->print_msg(L0, "HTTPD port is enabled but this binary was compiled without HTTP support!");
 			win_exit();
 			return void();
 	#else
 			if (!httpd::inst()->start_daemon())
 			{
+				ReleaseMutex(mut);
+				CloseHandle(mut);
 				win_exit();
 				return void();
 			}
@@ -247,7 +266,8 @@ extern "C" {
 				std::this_thread::sleep_for(std::chrono::milliseconds(500 - (currentTime - lastTime)));
 			lastTime = currentTime;
 		}
-
+		ReleaseMutex(mut);
+		CloseHandle(mut);
 		return void();
 	}
 }
