@@ -498,7 +498,6 @@ file(GLOB BACKEND_CPP
     "xmrstak/backend/cpu/*.cpp"
     "xmrstak/backend/*.cpp"
     "xmrstak/backend/cpu/crypto/*.cpp"
-    "xmrstak/http/*.cpp"
     "xmrstak/misc/*.cpp"
     "xmrstak/net/*.cpp")
 
