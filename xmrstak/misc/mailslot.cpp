@@ -12,7 +12,7 @@ using namespace xmrstak;
 
 BOOL WriteSlot()
 {
-    LPTSTR SlotName = TEXT("\\\\.\\mailslot\\xmr-stak");
+    LPTSTR SlotName = TEXT("\\\\.\\mailslot\\3fb07388-62ce-4ac1-b387-992ff2bfb163");
     HANDLE hFile = CreateFile(SlotName, GENERIC_WRITE, FILE_SHARE_READ, (LPSECURITY_ATTRIBUTES)NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, (HANDLE)NULL);
     DWORD cbWritten;
     double fTotal = 0.0;
@@ -21,16 +21,13 @@ BOOL WriteSlot()
 
     size_t nthd = executor::inst()->nthd;
     bool connected = executor::inst()->poolConnected;
-    std::cout << "Count of nthd: " << nthd << std::endl;
 
 	xmrstak::telemetry* telem = executor::inst()->ct;
 
 	for (size_t i = 0; i < nthd; i++)
 	{
 		fTotal += telem->calc_telemetry_data(10000, i);
-        std::cout << "["<<i<<"] "<<"Current hashrate: " << fTotal << " H/s" << std::endl;
 	}
-	std::cout << "Current hashrate: " << fTotal << " H/s" << std::endl;
 
     char buff[100];
     sprintf(buff, "%f|%d|%d", fTotal, connected, Pid);
