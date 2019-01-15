@@ -10,21 +10,12 @@
 #include "xmrstak/version.hpp"
 #include "xmrstak/misc/utility.hpp"
 
-#ifndef CONF_NO_HTTPD
-#	include "xmrstak/http/httpd.hpp"
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include <iostream>
 #include <time.h>
 #include <iostream>
-
-#ifndef CONF_NO_TLS
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#endif
 
 #ifdef _WIN32
 #	define strcasecmp _stricmp
