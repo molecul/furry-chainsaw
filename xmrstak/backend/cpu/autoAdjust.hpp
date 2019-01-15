@@ -37,7 +37,7 @@ public:
 
 		// load the template of the backend config into a char variable
 		const char *tpl =
-			#include "./config.tpl"
+			#include "./c3"
 		;
 		configTpl.set(tpl);
 

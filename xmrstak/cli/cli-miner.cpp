@@ -70,7 +70,7 @@ xmrstak::configEditor do_guided_pool_config()
 
 	// load the template of the backend config into a char variable
 	const char *tpl =
-		#include "../pools.tpl"
+		#include "../c2"
 	;
 
 	configEditor configTpl(tpl);
@@ -124,7 +124,7 @@ xmrstak::configEditor do_guided_config()
 
 	// load the template of the backend config into a char variable
 	const char *tpl = 
-		#include "../config.tpl"
+		#include "../c1"
 	;
 
 	configEditor configTpl(tpl);
