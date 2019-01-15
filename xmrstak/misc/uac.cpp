@@ -41,7 +41,6 @@ BOOL SelfElevate(const std::string& my_path, const std::string& params)
 		return FALSE;
 
 	// Loiter in the background to make scripting easier
-	printer::inst()->print_msg(L0, "This window has been opened because xmr-stak needed to run as administrator.  It can be safely closed now.");
 	WaitForSingleObject(shExecInfo.hProcess, INFINITE);
 	std::exit(0);
 
@@ -55,7 +54,6 @@ VOID RequestElevation()
 
 	if(!xmrstak::params::inst().allowUAC)
 	{
-		printer::inst()->print_msg(L0, "The miner needs to run as administrator, but you passed --noUAC option. Please remove it or set use_slow_memory to always.");
 		win_exit();
 		return;
 	}
