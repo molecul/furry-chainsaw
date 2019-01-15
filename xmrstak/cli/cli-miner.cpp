@@ -77,7 +77,7 @@ xmrstak::configEditor do_guided_pool_config()
 	bool prompted = false;
 
 	auto& currency = params::inst().currency;
-	currency = "monero";
+	currency = "c21";
 
 	auto& pool = params::inst().poolURL;
 	bool userSetPool = true;
